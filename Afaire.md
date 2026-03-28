@@ -99,7 +99,16 @@ Voici un plan d'action structuré sous forme de To-Do List, intégrant les élé
   - [ ] slug unique
   - [ ] champs requis
   - [ ] longueur meta_desc (recommandée ~155-160).
-- **DoD :** CRUD complet fonctionnel + validations.
+
+##### 4.2.1 Intégration WYSIWYG (TinyMCE) — SEO
+- [ ] Inclure TinyMCE via CDN dans `edit_article.php`.
+- [ ] Lier TinyMCE au `textarea#content`.
+- [ ] Limiter les formats de blocs à : `p`, `h2`, `h3` (optionnel `h4`) pour éviter le double `<h1>`.
+- [ ] Autoriser listes + liens + images, avec description image (alt) activée.
+- [ ] Forcer la synchro avant submit (`tinymce.triggerSave()`).
+- **Critère de validation :** l’admin structure l’article sans écrire HTML à la main, et le contenu respecte les règles SEO de base.
+
+- **DoD :** CRUD complet fonctionnel + validations + édition TinyMCE opérationnelle.
 
 ---
 

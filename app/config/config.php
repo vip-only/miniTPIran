@@ -32,7 +32,7 @@ $app->path(__DIR__ . $ds . '..' . $ds . '..');
 $app->path(__DIR__ . $ds . '..' . $ds . 'controllers');
 
 // This is where you can set some flight config variables. 
-$app->set('flight.base_url', 'http://localhost/'); // if this is in a subdirectory, you'll need to change this
+$app->set('flight.base_url', 'http://localhost:8080/'); // if this is in a subdirectory, you'll need to change this
 $app->set('flight.case_sensitive', false); // if you want case sensitive routes, set this to true
 $app->set('flight.log_errors', true); // if you want to log errors, set this to true
 $app->set('flight.handle_errors', false); // if you want flight to handle errors, set this to true, otherwise Tracy will handle them
@@ -74,11 +74,11 @@ return [
 		//  'dbname' => 'db_s2_ETU003088',
 		//  'user' => 'ETU003088',
 		//  'password' => 'msH9C4Ui'
-		'host' => 'localhost',
-		 'dbname' => 'elevage',
-		 'user' => 'root',
-		  'password' => ''
-
+		'host' => getenv('DB_HOST') ?: 'mysql',
+        'dbname' => getenv('DB_DATABASE') ?: 'mini_tp_iran',
+        'user' => getenv('DB_USERNAME') ?: 'app',
+        'password' => getenv('DB_PASSWORD') ?: 'app',
+   
 		// uncomment the following line for sqlite
 		// 'file_path' => __DIR__ . $ds . '..' . $ds . 'database.sqlite'
 	],
