@@ -1,7 +1,7 @@
 <?php
 $baseUrl = Flight::get('flight.base_url');
 $pageName = $page ?? '404';
-$allowedPages = ['home', 'article', '404'];
+$allowedPages = ['home', 'article', '404', 'backoffice/dashboard'];
 if (!in_array($pageName, $allowedPages, true)) {
     $pageName = '404';
 }

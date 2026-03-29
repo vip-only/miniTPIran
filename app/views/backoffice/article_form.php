@@ -21,17 +21,26 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8'); ?></title>
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/3icxdfwpj5rjy4gf88mq31shiqwuhmgx44c3pd9kxmrs4pms/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
-        tinymce.init({
-            selector: '#content',
-            plugins: 'lists link image table code help wordcount',
-            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code',
-            block_formats: 'Paragraphe=p; Titre 2=h2; Titre 3=h3; Titre 4=h4',
-            image_description: true,
-            image_advtab: true,
-            setup: function (editor) {
-                editor.on('change', function () {
+        document.addEventListener('DOMContentLoaded', function () {
+            tinymce.init({
+                selector: '#content',
+                plugins: 'lists link image table code help wordcount',
+                toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code',
+                block_formats: 'Paragraphe=p; Titre 2=h2; Titre 3=h3; Titre 4=h4',
+                image_description: true,
+                image_advtab: true,
+                setup: function (editor) {
+                    editor.on('change keyup blur', function () {
+                        tinymce.triggerSave();
+                    });
+                }
+            });
+
+            const form = document.querySelector('form[data-tinymce-form="1"]');
+            if (form) {
+                form.addEventListener('submit', function () {
                     tinymce.triggerSave();
                 });
             }
@@ -65,7 +74,7 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
             <div class="info"><?= htmlspecialchars((string) $info, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
 
-        <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>">
+        <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" data-tinymce-form="1">
             <div class="grid">
                 <div>
                     <label for="title">Titre</label>
