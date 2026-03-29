@@ -59,7 +59,7 @@ class FrontOfficeController
 		$dom = new \DOMDocument();
 		libxml_use_internal_errors(true);
 		$wrappedHtml = '<!DOCTYPE html><html><body>' . $html . '</body></html>';
-		$dom->loadHTML(mb_convert_encoding($wrappedHtml, 'HTML-ENTITIES', 'UTF-8'));
+		$dom->loadHTML($wrappedHtml);
 
 		foreach (['h1', 'h4', 'h5', 'h6'] as $tag) {
 			$nodes = $dom->getElementsByTagName($tag);
