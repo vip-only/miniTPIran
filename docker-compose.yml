@@ -37,5 +37,21 @@ services:
       timeout: 3s
       retries: 20
 
+  mysql-init:
+    image: mysql:8.0
+    container_name: miniTPIran-db-init
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./sql:/sql:ro
+    command: >
+      sh -c "
+      echo 'Application du script SQL...';
+      mysql -hmysql -uroot -proot mini_tp_iran < /sql/script.sql;
+      echo 'Script SQL appliqué.'
+      "
+    restart: "no"
+
 volumes:
   mysql_data:
