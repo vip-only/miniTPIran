@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y \
 # Modules Apache: rewrite + cache + gzip
 RUN a2enmod rewrite headers expires deflate
 
-# DocumentRoot vers /public (Flight)
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+# DocumentRoot vers la racine du projet
+ENV APACHE_DOCUMENT_ROOT=/var/www/html
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
     /etc/apache2/sites-available/000-default.conf \
     /etc/apache2/apache2.conf

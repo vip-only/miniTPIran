@@ -1,12 +1,8 @@
 <?php
 
-use app\controllers\AchatAlimentController;
 use app\controllers\ElevageController;
-use app\controllers\AnimalController;
 use flight\Engine;
 use flight\net\Router;
-use App\Models\ElevageModel;
-use App\Models\VenteModel;
 //use Flight;
 
 /** 
@@ -19,30 +15,12 @@ use App\Models\VenteModel;
 });*/
 
 $Elevage_Controller = new ElevageController();
-$Animal_Controller = new AnimalController();
-$AchatAnimal_Controller = new AchatAlimentController();
-$router->get('/', [ $Elevage_Controller, 'insertionCapital' ]);
-$router->post('/', [ $Elevage_Controller, 'insertionCapital' ]);
-$router->get('/accueil', [ $Elevage_Controller, 'accueil' ]);
-$router->get('/nourrir', [ $Elevage_Controller, 'nourrirAnimal' ]);
-$router->get('/venteAnimal', [ $Elevage_Controller, 'venteAnimal' ]);
-$router->get('/updateTypes', [ $Elevage_Controller, 'updateTypes' ]);
-$router->post('/updateTypes', [ $Elevage_Controller, 'updateTypes' ]);
-$router->get('/ajoutType', [ $Elevage_Controller, 'ajouterType' ]);
-$router->post('/ajoutType', [ $Elevage_Controller, 'ajouterType' ]);
-$router->get('/statit', [ $Elevage_Controller, 'goStat' ]);
-$router->get('/stat', [ $Elevage_Controller, 'stat' ]);
-
-
-$router->get('/achatAnimal', [ $Animal_Controller, 'achatAnimal' ]);
-$router->get('/trachatAnimal', [ $Animal_Controller, 'trachatAnimal' ]);
-$router->get('/achatAliment', [ $AchatAnimal_Controller, 'acheterAliment' ]);
-$router->post('/acheterAliment', [ $AchatAnimal_Controller, 'acheterAliment' ]);
-$router->get('/acheterAliment', [ $AchatAnimal_Controller, 'acheterAliment' ]);
-
-
-$router->get('/ajoutCapital', [ $Animal_Controller, 'ajoutCapital' ]);
-$router->get('/trajoutCapital', [ $Animal_Controller, 'trajoutCapital' ]);
+$router->get('/', function() {
+	echo '<h1>Application demarree</h1><p>Routes actives: <a href="/hello-world/dev">/hello-world/dev</a></p>';
+});
+$router->get('/accueil', function() {
+	echo '<h1>Accueil</h1><p>La route fonctionne.</p>';
+});
 
 // $router->get('/', function() {
 //     $adminModel = new AdminModel(Flight::db());
