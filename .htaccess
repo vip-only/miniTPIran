@@ -1,8 +1,17 @@
 RewriteEngine On
+RewriteBase /
 
-# Modele demande: /articles/article-12-2-5.html -> /articles/article.php?id=12&page=2&rubrique=5
+Options -MultiViews
+
+RewriteRule ^backoffice\.html$ index.php [L,QSA,NC]
+RewriteRule ^backoffice/login\.html$ index.php [L,QSA,NC]
+RewriteRule ^backoffice/logout\.html$ index.php [L,QSA,NC]
+RewriteRule ^backoffice/articles/create\.html$ index.php [L,QSA,NC]
+RewriteRule ^backoffice/articles/edit-([0-9]+)\.html$ index.php [L,QSA,NC]
+RewriteRule ^backoffice/articles/delete-([0-9]+)\.html$ index.php [L,QSA,NC]
+
 RewriteRule ^articles/article-([0-9]+)-([0-9]+)-([0-9]+)\.html$ articles/article.php?id=$1&page=$2&rubrique=$3 [L,QSA,NC]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [L,QSA]
+RewriteRule ^ index.php [L,QSA]

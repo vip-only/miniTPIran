@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `seo_metadata` (
 -- Insertion d'un admin par défaut (Password: 'admin123' - hashé ici)
 -- Note: Dans ton code PHP, utilise password_hash() pour générer le hash.
 INSERT INTO `users` (`username`, `password_hash`) 
-VALUES ('admin', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe.9W6I.B1qI7vV8T1S5X5f8D8d8D8d8D');
+VALUES ('admin', '$2y$10$HDucGaes3eC/1vMxiv8pnuFD507qAp.X1PhVxfaDEAWUB8fJIlg.a');
 
 -- Insertion d'un article d'exemple sur la Guerre en Iran
 INSERT INTO `articles` (`title`, `slug`, `content`, `image_url`, `image_alt`) 
