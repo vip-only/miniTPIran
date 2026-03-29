@@ -17,23 +17,48 @@ if (!file_exists($viewFile)) {
     <?php include __DIR__ . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'head.php'; ?>
 </head>
 <body>
+    <div class="breaking-bar">
+        <span class="label">En direct</span>
+        <span class="ticker">Suivez les actualites geopolitques en continu</span>
+    </div>
+
+    <div class="top-bar">
+        <span class="date"><?= date('l d F Y'); ?></span>
+        <div class="top-links">
+            <a href="#">Edition du soir</a>
+            <a href="#">Podcasts</a>
+            <a href="#">Videos</a>
+        </div>
+        <a href="#" class="subscribe-btn">S'abonner</a>
+    </div>
+
     <header class="site-header">
-        <div class="container">
-            <a class="brand" href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8'); ?>">Mini Projet Web</a>
-            <nav class="main-nav" aria-label="Navigation principale">
-                <a href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8'); ?>">Accueil</a>
-            </nav>
+        <div class="header-inner">
+            <a class="site-logo" href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8'); ?>">Le Monde<span>.</span></a>
         </div>
     </header>
 
-    <main class="container">
+    <nav class="main-nav">
+        <div class="nav-inner">
+            <a href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8'); ?>" class="active">A la une</a>
+            <a href="#">International</a>
+            <a href="#">France</a>
+            <a href="#">Economie</a>
+            <a href="#">Sciences</a>
+            <a href="#">Culture</a>
+            <a href="#">Idees</a>
+        </div>
+    </nav>
+
+    <main class="site-container">
         <?php include __DIR__ . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'flash.php'; ?>
         <?php include $viewFile; ?>
         <?php include __DIR__ . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'pagination.php'; ?>
     </main>
 
     <footer class="site-footer">
-        <div class="container">
+        <div class="site-container footer-inner">
+            <span class="footer-logo">Le Monde</span>
             <small>Mini-projet Web Design 2026</small>
         </div>
     </footer>

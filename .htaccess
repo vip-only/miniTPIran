@@ -1,4 +1,8 @@
 RewriteEngine On
+
+# Modele demande: /articles/article-12-2-5.html -> /articles/article.php?id=12&page=2&rubrique=5
+RewriteRule ^articles/article-([0-9]+)-([0-9]+)-([0-9]+)\.html$ articles/article.php?id=$1&page=$2&rubrique=$3 [L,QSA,NC]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [L,QSA]

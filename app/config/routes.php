@@ -13,7 +13,8 @@ $frontOfficeController = new FrontOfficeController();
 
 // FrontOffice routes
 $router->get('/', [ $frontOfficeController, 'home' ]);
-$router->get('/article/@slug:[a-z0-9-]+', [ $frontOfficeController, 'article' ]);
+$router->get('/articles/article.php', [ $frontOfficeController, 'articleLegacyQuery' ]);
+$router->get('/articles/@legacy', [ $frontOfficeController, 'articleLegacyRoute' ]);
 $app->map('notFound', [ $frontOfficeController, 'notFound' ]);
 
 // BackOffice routes

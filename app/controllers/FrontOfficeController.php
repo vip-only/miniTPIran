@@ -7,6 +7,30 @@ use PDO;
 
 class FrontOfficeController
 {
+	private function renderArticlePage(array $article, string $canonicalPath, string $currentPath): void
+	{
+		$imageAlt = trim((string) ($article['image_alt'] ?? ''));
+		if ($imageAlt === '') {
+			$imageAlt = 'Illustration: ' . $article['title'];
+		}
+
+		$article['image_alt'] = $imageAlt;
+		$article['content'] = $this->normalizeArticleHtml((string) ($article['content'] ?? ''), $imageAlt);
+		$metaTitle = trim((string) ($article['meta_title'] ?? ''));
+		$metaDescription = trim((string) ($article['meta_description'] ?? ''));
+		$canonicalUrl = trim((string) ($article['canonical_url'] ?? ''));
+
+		Flight::render('template', [
+			'page' => 'article',
+			'article' => $article,
+			'title' => $metaTitle !== '' ? $metaTitle : $article['title'] . ' | Mini Projet Web',
+			'metaDescription' => $metaDescription !== '' ? mb_substr($metaDescription, 0, 155) : $this->fallbackDescription((string) $article['title'], (string) $article['content']),
+			'canonicalUrl' => $canonicalUrl !== '' ? $canonicalUrl : $this->buildCanonical($canonicalPath),
+			'ogType' => 'article',
+			'currentPath' => $currentPath
+		]);
+	}
+
 	private function buildCanonical(string $path = ''): string
 	{
 		$base = rtrim((string) Flight::get('flight.base_url'), '/');
@@ -35,7 +59,7 @@ class FrontOfficeController
 		$dom = new \DOMDocument();
 		libxml_use_internal_errors(true);
 		$wrappedHtml = '<!DOCTYPE html><html><body>' . $html . '</body></html>';
-		$dom->loadHTML(mb_convert_encoding($wrappedHtml, 'HTML-ENTITIES', 'UTF-8'));
+		$dom->loadHTML($wrappedHtml);
 
 		foreach (['h1', 'h4', 'h5', 'h6'] as $tag) {
 			$nodes = $dom->getElementsByTagName($tag);
@@ -81,7 +105,7 @@ class FrontOfficeController
 	public function home(): void
 	{
 		$db = Flight::db();
-		$stmt = $db->prepare("SELECT id, title, slug, content, image_url, image_alt, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC");
+		$stmt = $db->prepare("SELECT id, title, content, image_url, image_alt, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC");
 		$stmt->execute();
 		$articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -96,58 +120,62 @@ class FrontOfficeController
 		]);
 	}
 
-	public function article(string $slug): void
+	public function articleLegacy(int $id, int $page, int $rubrique): void
 	{
 		$db = Flight::db();
 		$stmt = $db->prepare(
-			"SELECT a.id, a.title, a.slug, a.content, a.image_url, a.image_alt, a.published_at,
+			"SELECT a.id, a.title, a.content, a.image_url, a.image_alt, a.published_at,
 					s.meta_title, s.meta_description, s.canonical_url
 			 FROM articles a
 			 LEFT JOIN seo_metadata s ON s.article_id = a.id
-			 WHERE a.slug = :slug AND a.status = 'published'
+			 WHERE a.id = :id AND a.status = 'published'
 			 LIMIT 1"
 		);
-		$stmt->execute(['slug' => $slug]);
+		$stmt->execute(['id' => $id]);
 		$article = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		if ($article === false) {
-			$this->articleNotFound($slug);
+			http_response_code(404);
+			Flight::render('template', [
+				'page' => '404',
+				'title' => '404 | Article introuvable',
+				'metaDescription' => 'La page demandee est introuvable.',
+				'canonicalUrl' => $this->buildCanonical('articles/article-' . (int) $id . '-' . (int) $page . '-' . (int) $rubrique . '.html'),
+				'ogType' => 'website',
+				'currentPath' => '/articles/article-' . (int) $id . '-' . (int) $page . '-' . (int) $rubrique . '.html'
+			]);
 			return;
 		}
 
-		$imageAlt = trim((string) ($article['image_alt'] ?? ''));
-		if ($imageAlt === '') {
-			$imageAlt = 'Illustration: ' . $article['title'];
-		}
-
-		$article['image_alt'] = $imageAlt;
-		$article['content'] = $this->normalizeArticleHtml((string) ($article['content'] ?? ''), $imageAlt);
-		$metaTitle = trim((string) ($article['meta_title'] ?? ''));
-		$metaDescription = trim((string) ($article['meta_description'] ?? ''));
-		$canonicalUrl = trim((string) ($article['canonical_url'] ?? ''));
-
-		Flight::render('template', [
-			'page' => 'article',
-			'article' => $article,
-			'title' => $metaTitle !== '' ? $metaTitle : $article['title'] . ' | Mini Projet Web',
-			'metaDescription' => $metaDescription !== '' ? mb_substr($metaDescription, 0, 155) : $this->fallbackDescription((string) $article['title'], (string) $article['content']),
-			'canonicalUrl' => $canonicalUrl !== '' ? $canonicalUrl : $this->buildCanonical('article/' . (string) $article['slug']),
-			'ogType' => 'article',
-			'currentPath' => '/article/' . $article['slug']
-		]);
+		$this->renderArticlePage(
+			$article,
+			'articles/article-' . (int) $id . '-' . (int) $page . '-' . (int) $rubrique . '.html',
+			'/articles/article-' . (int) $id . '-' . (int) $page . '-' . (int) $rubrique . '.html'
+		);
 	}
 
-	public function articleNotFound(string $slug): void
+	public function articleLegacyRoute(string $legacy): void
 	{
-		http_response_code(404);
-		Flight::render('template', [
-			'page' => '404',
-			'title' => '404 | Article introuvable',
-			'metaDescription' => 'La page demandee est introuvable.',
-			'canonicalUrl' => $this->buildCanonical('article/' . rawurlencode($slug)),
-			'ogType' => 'website',
-			'currentPath' => '/article/' . $slug
-		]);
+		if (!preg_match('/^article-(\d+)-(\d+)-(\d+)\.html$/', $legacy, $matches)) {
+			$this->notFound();
+			return;
+		}
+
+		$this->articleLegacy((int) $matches[1], (int) $matches[2], (int) $matches[3]);
+	}
+
+	public function articleLegacyQuery(): void
+	{
+		$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+		$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+		$rubrique = isset($_GET['rubrique']) ? (int) $_GET['rubrique'] : 0;
+
+		if ($id <= 0 || $page <= 0 || $rubrique < 0) {
+			$this->notFound();
+			return;
+		}
+
+		$this->articleLegacy($id, $page, $rubrique);
 	}
 
 	public function notFound(): void
