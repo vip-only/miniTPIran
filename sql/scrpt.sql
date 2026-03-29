@@ -50,11 +50,12 @@ INSERT INTO `users` (`username`, `password_hash`)
 VALUES ('admin', '$2y$10$e0MYzXyjpJS7Pd0RVvHwHe.9W6I.B1qI7vV8T1S5X5f8D8d8D8d8D');
 
 -- Insertion d'un article d'exemple sur la Guerre en Iran
-INSERT INTO `articles` (`title`, `slug`, `content`, `image_alt`) 
+INSERT INTO `articles` (`title`, `slug`, `content`, `image_url`, `image_alt`) 
 VALUES (
     'Les enjeux géopolitiques en Iran en 2026', 
     'enjeux-geopolitiques-iran-2026', 
     '<p>Contenu détaillé sur la situation actuelle...</p><h2>Historique du conflit</h2><p>Détails...</p>',
+    'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=1400&q=80',
     'Carte stratégique des tensions en Iran'
 );
 
@@ -67,12 +68,13 @@ VALUES (
 );
 
 -- Articles supplémentaires pour valider le tri DESC en Front-Office
-INSERT INTO `articles` (`title`, `slug`, `content`, `image_alt`, `status`, `published_at`)
+INSERT INTO `articles` (`title`, `slug`, `content`, `image_url`, `image_alt`, `status`, `published_at`)
 VALUES
 (
     'Chronologie des tensions diplomatiques (Mars 2026)',
     'chronologie-tensions-diplomatiques-mars-2026',
     '<p>Chronologie des événements diplomatiques les plus marquants de mars 2026.</p>',
+    'https://images.unsplash.com/photo-1521292270410-a8c4d716d518?auto=format&fit=crop&w=1200&q=80',
     'Chronologie des tensions diplomatiques en Iran',
     'published',
     '2026-03-28 09:30:00'
@@ -81,6 +83,7 @@ VALUES
     'Impact économique régional : pétrole et sanctions',
     'impact-economique-petrole-sanctions',
     '<p>Analyse des effets économiques régionaux liés au pétrole et aux sanctions internationales.</p>',
+    'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80',
     'Analyse économique des sanctions en Iran',
     'published',
     '2026-03-29 15:45:00'
@@ -89,6 +92,7 @@ VALUES
     'Scénarios possibles pour la stabilité en 2027',
     'scenarios-stabilite-iran-2027',
     '<p>Présentation de scénarios de stabilisation politique et sécuritaire pour 2027.</p>',
+    'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?auto=format&fit=crop&w=1200&q=80',
     'Scénarios de stabilité pour l Iran en 2027',
     'draft',
     '2026-03-30 08:00:00'

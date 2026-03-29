@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le Monde — Template</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=Noto+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #1a1a1a;
+      --ink:        #222222;
+      --mid:        #555555;
+      --light:      #888888;
+      --border:     #d9d9d9;
+      --bg:         #f5f4f0;
+      --white:      #ffffff;
+      --red:        #c0392b;
+      --blue:       #0a3d6b;
+      --gold:       #b8860b;
+
+      --serif:      'Playfair Display', Georgia, serif;
+      --body-serif: 'Source Serif 4', Georgia, serif;
+      --sans:       'Noto Sans', Helvetica, sans-serif;
+    }
+
+    html { font-size: 16px; }
+    body {
+      font-family: var(--body-serif);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { display: block; width: 100%; height: auto; object-fit: cover; }
+
+    /* ═══════════════════════════════════════ BREAKING BAR */
+    .breaking-bar {
+      background: var(--red);
+      color: #fff;
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.45rem 1.5rem;
+      overflow: hidden;
+    }
+    .breaking-bar .label {
+      white-space: nowrap;
+      background: #fff;
+      color: var(--red);
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      font-size: 0.7rem;
+    }
+    .breaking-bar .ticker { white-space: nowrap; opacity: 0.95; }
+
+    /* ═══════════════════════════════════════ TOP BAR */
+    .top-bar {
+      border-bottom: 1px solid var(--border);
+      background: var(--white);
+      padding: 0.4rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      color: var(--mid);
+    }
+    .top-bar .date { letter-spacing: 0.03em; }
+    .top-bar .top-links { display: flex; gap: 1.2rem; }
+    .top-bar .top-links a:hover { color: var(--blue); }
+    .top-bar .subscribe-btn {
+      background: var(--blue);
+      color: #fff;
+      padding: 0.3rem 0.9rem;
+      border-radius: 2px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: background 0.2s;
+    }
+    .top-bar .subscribe-btn:hover { background: #0d5298; }
+
+    /* ═══════════════════════════════════════ HEADER */
+    header {
+      background: var(--white);
+      border-bottom: 3px solid var(--black);
+      padding: 1rem 1.5rem 0.8rem;
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .site-logo {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--black);
+      line-height: 1;
+    }
+    .site-logo span { color: var(--red); }
+
+    /* ═══════════════════════════════════════ NAV */
+    nav.main-nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-inner::-webkit-scrollbar { display: none; }
+    .nav-inner a {
+      white-space: nowrap;
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink);
+      padding: 0.75rem 1rem;
+      border-bottom: 3px solid transparent;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .nav-inner a:hover,
+    .nav-inner a.active { border-color: var(--red); color: var(--red); }
+    .nav-search {
+      margin-left: auto;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--mid);
+    }
+
+    /* ═══════════════════════════════════════ LAYOUT */
+    .site-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ═══════════════════════════════════════ SECTION LABEL */
+    .section-label {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    /* ═══════════════════════════════════════ HERO GRID */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      grid-template-rows: auto auto;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 0 1.5rem;
+    }
+    .hero-main {
+      padding-right: 2rem;
+      border-right: 1px solid var(--border);
+    }
+    .hero-main img {
+      aspect-ratio: 16/9;
+      margin-bottom: 1rem;
+    }
+    .hero-main .label { margin-bottom: 0.5rem; }
+    .hero-main h1 {
+      font-family: var(--serif);
+      font-size: clamp(1.6rem, 3vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--black);
+      margin-bottom: 0.6rem;
+    }
+    .hero-main .standfirst {
+      font-size: 1.05rem;
+      color: var(--mid);
+      line-height: 1.55;
+      margin-bottom: 0.8rem;
+    }
+    .hero-meta {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      color: var(--light);
+      display: flex;
+      gap: 1rem;
+    }
+    .hero-meta .author { color: var(--blue); font-weight: 600; }
+
+    /* Sidebar stack */
+    .hero-sidebar {
+      padding-left: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .side-article {
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .side-article:last-child { border-bottom: none; }
+    .side-article img {
+      aspect-ratio: 3/2;
+      margin-bottom: 0.6rem;
+    }
+    .side-article h3 {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--black);
+    }
+    .side-article h3:hover { color: var(--blue); }
+
+    /* ═══════════════════════════════════════ 3-COL GRID */
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 1.5rem 0 0.8rem;
+      border-top: 3px solid var(--black);
+      margin-top: 1.5rem;
+    }
+    .section-header h2 {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--black);
+    }
+    .section-header a {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-left: auto;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+    .col-article {
+      padding: 0 1.5rem;
+      border-left: 1px solid var(--border);
+    }
+    .col-article:first-child { padding-left: 0; border-left: none; }
+    .col-article img {
+      aspect-ratio: 4/3;
+      margin-bottom: 0.7rem;
+    }
+    .col-article .label { margin-bottom: 0.3rem; }
+    .col-article h3 {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 0.4rem;
+      color: var(--black);
+    }
+    .col-article h3:hover { color: var(--blue); cursor: pointer; }
+    .col-article p {
+      font-size: 0.88rem;
+      color: var(--mid);
+      line-height: 1.55;
+    }
+    .col-article .meta {
+      margin-top: 0.5rem;
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      color: var(--light);
+    }
+
+    /* ═══════════════════════════════════════ OPINION BAND */
+    .opinion-band {
+      background: var(--black);
+      color: var(--white);
+      padding: 1.5rem 0;
+      margin: 1.5rem 0;
+    }
+    .opinion-band .site-container {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .opinion-label {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-style: italic;
+      font-weight: 400;
+      color: #e8d9b0;
+      white-space: nowrap;
+      padding-right: 2rem;
+      border-right: 1px solid #444;
+    }
+    .opinion-cards {
+      display: flex;
+      gap: 1.5rem;
+      flex: 1;
+    }
+    .opinion-card {
+      flex: 1;
+      border-left: 2px solid #444;
+      padding-left: 1rem;
+    }
+    .opinion-card .author {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e8d9b0;
+      margin-bottom: 0.4rem;
+    }
+    .opinion-card h4 {
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.4;
+      color: #e0e0e0;
+    }
+    .opinion-card h4:hover { color: #fff; cursor: pointer; }
+
+    /* ═══════════════════════════════════════ MAGAZINE / LARGE FEATURE */
+    .feature-strip {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 0;
+      border-top: 3px solid var(--black);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 0;
+      margin-top: 1.5rem;
+    }
+    .feature-main { padding-right: 2rem; border-right: 1px solid var(--border); }
+    .feature-main img { aspect-ratio: 3/2; margin-bottom: 0.8rem; }
+    .feature-main h2 {
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .feature-main h2:hover { color: var(--blue); cursor: pointer; }
+    .feature-main p { font-size: 0.9rem; color: var(--mid); }
+    .feature-side {
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border-right: 1px solid var(--border);
+    }
+    .feature-side:last-child { border-right: none; padding-right: 0; }
+    .mini-article { border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .mini-article:last-child { border-bottom: none; }
+    .mini-article .label { margin-bottom: 0.3rem; }
+    .mini-article h4 {
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--black);
+    }
+    .mini-article h4:hover { color: var(--blue); cursor: pointer; }
+
+    /* ═══════════════════════════════════════ NEWSLETTER BANNER */
+    .newsletter {
+      background: var(--blue);
+      color: #fff;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+    .newsletter h3 {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .newsletter p {
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin-bottom: 1rem;
+    }
+    .newsletter-form {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .newsletter-form input {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      border: none;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      outline: none;
+      border-radius: 2px 0 0 2px;
+    }
+    .newsletter-form button {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 0 2px 2px 0;
+      transition: background 0.2s;
+    }
+    .newsletter-form button:hover { background: #a93226; }
+
+    /* ═══════════════════════════════════════ FOOTER */
+    footer {
+      background: var(--black);
+      color: #aaa;
+      padding: 2.5rem 1.5rem 1.5rem;
+      margin-top: 2rem;
+    }
+    .footer-grid {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #333;
+    }
+    .footer-col h5 {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 0.8rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .footer-col ul li a {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      color: #888;
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 1.2rem auto 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      color: #555;
+    }
+    .footer-logo {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    /* ═══════════════════════════════════════ PLACEHOLDER IMAGES */
+    .img-placeholder {
+      background: linear-gradient(135deg, #ddd 0%, #bbb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ═══════════════════════════════════════ RESPONSIVE */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-main { padding-right: 0; border-right: none; }
+      .hero-sidebar { padding-left: 0; border-top: 1px solid var(--border); padding-top: 1rem; }
+      .three-col { grid-template-columns: 1fr 1fr; }
+      .three-col .col-article:nth-child(3) { display: none; }
+      .feature-strip { grid-template-columns: 1fr 1fr; }
+      .feature-side:last-child { display: none; }
+      .footer-grid { grid-template-columns: repeat(3, 1fr); }
+      .opinion-band .site-container { flex-direction: column; }
+      .opinion-label { border-right: none; border-bottom: 1px solid #444; padding-bottom: 0.8rem; padding-right: 0; }
+    }
+    @media (max-width: 600px) {
+      .three-col { grid-template-columns: 1fr; }
+      .feature-strip { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .top-bar .top-links { display: none; }
+      .opinion-cards { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ░░ BREAKING NEWS ░░ -->
+<div class="breaking-bar">
+  <span class="label">En direct</span>
+  <span class="ticker">Dernières informations : suivez l'actualité en temps réel avec Le Monde</span>
+</div>
+
+<!-- ░░ TOP BAR ░░ -->
+<div class="top-bar">
+  <span class="date">Dimanche 29 mars 2026</span>
+  <div class="top-links">
+    <a href="#">Édition du soir</a>
+    <a href="#">Podcasts</a>
+    <a href="#">Vidéos</a>
+    <a href="#">Mon compte</a>
+  </div>
+  <a href="#" class="subscribe-btn">S'abonner</a>
+</div>
+
+<!-- ░░ HEADER ░░ -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="site-logo">Le Monde<span>.</span></a>
+  </div>
+</header>
+
+<!-- ░░ NAVIGATION ░░ -->
+<nav class="main-nav">
+  <div class="nav-inner">
+    <a href="#" class="active">À la une</a>
+    <a href="#">International</a>
+    <a href="#">France</a>
+    <a href="#">Politique</a>
+    <a href="#">Économie</a>
+    <a href="#">Société</a>
+    <a href="#">Sciences</a>
+    <a href="#">Culture</a>
+    <a href="#">Idées</a>
+    <a href="#">Sport</a>
+    <a href="#">Planète</a>
+    <a href="#">Pixels</a>
+    <span class="nav-search">&#9906;</span>
+  </div>
+</nav>
+
+<!-- ░░ MAIN CONTENT ░░ -->
+<main class="site-container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <article class="hero-main">
+      <div class="img-placeholder" style="aspect-ratio:16/9; width:100%; height:auto; min-height:280px;">
+        <!-- Remplacer par <img src="image.jpg" alt="Description"> -->
+        IMAGE PRINCIPALE
+      </div>
+      <span class="section-label">International</span>
+      <h1>Le titre principal de l'article à la une, sur une ou deux lignes</h1>
+      <p class="standfirst">Le chapeau de l'article introduit le sujet en quelques phrases. Il résume les points essentiels et donne envie au lecteur de poursuivre la lecture de l'article complet.</p>
+      <div class="hero-meta">
+        <span class="author">Par Prénom Nom</span>
+        <span>Publié le 29 mars 2026</span>
+        <span>&#128337; 5 min</span>
+      </div>
+    </article>
+
+    <aside class="hero-sidebar">
+      <article class="side-article">
+        <div class="img-placeholder" style="aspect-ratio:3/2; width:100%; min-height:120px;">IMAGE</div>
+        <span class="section-label">France</span>
+        <h3><a href="#">Titre du deuxième article important de la une</a></h3>
+      </article>
+      <article class="side-article">
+        <div class="img-placeholder" style="aspect-ratio:3/2; width:100%; min-height:120px;">IMAGE</div>
+        <span class="section-label">Économie</span>
+        <h3><a href="#">Troisième article mis en avant sur la page d'accueil</a></h3>
+      </article>
+      <article class="side-article">
+        <span class="section-label">Politique</span>
+        <h3><a href="#">Quatrième titre sans image pour varier la mise en page éditoriale</a></h3>
+      </article>
+    </aside>
+  </section>
+
+  <!-- SECTION : Les plus lus -->
+  <div class="section-header">
+    <h2>Actualités</h2>
+    <a href="#">Voir tout &rarr;</a>
+  </div>
+  <div class="three-col">
+    <article class="col-article">
+      <div class="img-placeholder" style="aspect-ratio:4/3; width:100%; min-height:160px;">IMAGE</div>
+      <span class="section-label">Société</span>
+      <h3><a href="#">Titre d'un article de la section société ou faits de société</a></h3>
+      <p>Courte accroche qui résume l'angle éditorial de l'article en deux ou trois phrases.</p>
+      <div class="meta">Par Auteur &bull; il y a 2 heures</div>
+    </article>
+    <article class="col-article">
+      <div class="img-placeholder" style="aspect-ratio:4/3; width:100%; min-height:160px;">IMAGE</div>
+      <span class="section-label">Sciences</span>
+      <h3><a href="#">Une découverte scientifique ou un sujet de santé publique récent</a></h3>
+      <p>Introduction concise pour donner le contexte de l'article et inciter le lecteur à cliquer.</p>
+      <div class="meta">Par Auteur &bull; Hier</div>
+    </article>
+    <article class="col-article">
+      <div class="img-placeholder" style="aspect-ratio:4/3; width:100%; min-height:160px;">IMAGE</div>
+      <span class="section-label">Planète</span>
+      <h3><a href="#">Un article lié à l'environnement ou au changement climatique</a></h3>
+      <p>Description brève qui expose les enjeux ou les faits saillants de l'article en question.</p>
+      <div class="meta">Par Auteur &bull; il y a 5 heures</div>
+    </article>
+  </div>
+
+</main>
+
+<!-- ░░ OPINION BAND ░░ -->
+<section class="opinion-band">
+  <div class="site-container">
+    <span class="opinion-label">Tribunes<br>&amp; analyses</span>
+    <div class="opinion-cards">
+      <div class="opinion-card">
+        <div class="author">Prénom Nom</div>
+        <h4><a href="#">« Le titre de la tribune ou de l'analyse rédigée par cet éditorialiste »</a></h4>
+      </div>
+      <div class="opinion-card">
+        <div class="author">Prénom Nom</div>
+        <h4><a href="#">« Une autre opinion ou un point de vue sur un sujet d'actualité »</a></h4>
+      </div>
+      <div class="opinion-card">
+        <div class="author">Prénom Nom</div>
+        <h4><a href="#">« La chronique hebdomadaire d'un journaliste ou d'un expert invité »</a></h4>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="site-container">
+
+  <!-- FEATURE STRIP -->
+  <section class="feature-strip">
+    <article class="feature-main">
+      <div class="img-placeholder" style="aspect-ratio:3/2; width:100%; min-height:200px;">IMAGE</div>
+      <span class="section-label">Dossier</span>
+      <h2><a href="#">Grand reportage ou dossier spécial sur un sujet de fond</a></h2>
+      <p>Texte d'accroche décrivant le dossier ou l'enquête en quelques phrases percutantes pour le lecteur.</p>
+    </article>
+    <div class="feature-side">
+      <article class="mini-article">
+        <span class="section-label">Culture</span>
+        <h4><a href="#">Critique d'un film, d'un livre ou d'une exposition en cours</a></h4>
+      </article>
+      <article class="mini-article">
+        <span class="section-label">Idées</span>
+        <h4><a href="#">Un débat ou une réflexion sur les grandes questions de notre époque</a></h4>
+      </article>
+      <article class="mini-article">
+        <span class="section-label">Sport</span>
+        <h4><a href="#">Résultats, analyses et commentaires sur l'actualité sportive du moment</a></h4>
+      </article>
+    </div>
+    <div class="feature-side">
+      <article class="mini-article">
+        <span class="section-label">Économie</span>
+        <h4><a href="#">Analyse des marchés financiers et des tendances économiques mondiales</a></h4>
+      </article>
+      <article class="mini-article">
+        <span class="section-label">Pixels</span>
+        <h4><a href="#">Intelligence artificielle, numérique et nouvelles technologies en focus</a></h4>
+      </article>
+      <article class="mini-article">
+        <span class="section-label">Éducation</span>
+        <h4><a href="#">Réforme de l'enseignement et enjeux pour la jeunesse française et mondiale</a></h4>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<!-- ░░ NEWSLETTER ░░ -->
+<section class="newsletter">
+  <h3>Restez informé avec notre newsletter</h3>
+  <p>Recevez chaque matin une sélection des articles essentiels du Monde directement dans votre boîte mail.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="Votre adresse e-mail" />
+    <button type="button">S'inscrire</button>
+  </div>
+</section>
+
+<!-- ░░ FOOTER ░░ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h5>Le Monde</h5>
+      <ul>
+        <li><a href="#">À propos</a></li>
+        <li><a href="#">La rédaction</a></li>
+        <li><a href="#">Qui sommes-nous ?</a></li>
+        <li><a href="#">Charte éthique</a></li>
+        <li><a href="#">Partenariats</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Rubriques</h5>
+      <ul>
+        <li><a href="#">International</a></li>
+        <li><a href="#">France</a></li>
+        <li><a href="#">Économie</a></li>
+        <li><a href="#">Sciences</a></li>
+        <li><a href="#">Culture</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Services</h5>
+      <ul>
+        <li><a href="#">S'abonner</a></li>
+        <li><a href="#">Newsletter</a></li>
+        <li><a href="#">Podcasts</a></li>
+        <li><a href="#">Applications</a></li>
+        <li><a href="#">Archives</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Groupe</h5>
+      <ul>
+        <li><a href="#">Le Monde Diplomatique</a></li>
+        <li><a href="#">Télérama</a></li>
+        <li><a href="#">Courrier international</a></li>
+        <li><a href="#">L'Obs</a></li>
+        <li><a href="#">Huffington Post</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Légal</h5>
+      <ul>
+        <li><a href="#">Mentions légales</a></li>
+        <li><a href="#">Politique de confidentialité</a></li>
+        <li><a href="#">Gestion des cookies</a></li>
+        <li><a href="#">CGU</a></li>
+        <li><a href="#">Publicité</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-logo">Le Monde</span>
+    <span>© Le Monde 2026 — Template HTML non officiel</span>
+  </div>
+</footer>
+
+</body>
+</html>
