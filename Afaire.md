@@ -41,16 +41,16 @@ Voici un plan d'action structuré sous forme de To-Do List, intégrant les élé
 - [ ] Ajouter autoload PSR-4.
 
 #### 2.2 Routing & Rewriting
-- [ ] Configurer `.htaccess` (redirection vers `public/index.php`).
-- [ ] Définir routes FrontOffice:
-  - [ ] `GET /`
-  - [ ] `GET /article/@slug`
-- [ ] Définir routes BackOffice:
-  - [ ] `GET|POST /admin/login`
-  - [ ] `GET /admin`
-  - [ ] `GET|POST /admin/articles/create`
-  - [ ] `GET|POST /admin/articles/@id/edit`
-  - [ ] `POST /admin/articles/@id/delete`
+- [ok] Configurer `.htaccess` (redirection vers `public/index.php`).
+- [ok] Définir routes FrontOffice:
+  - [ok] `GET /`
+  - [ok] `GET /article/@slug`
+- [ok] Définir routes BackOffice:
+  - [ok] `GET|POST /admin/login`
+  - [ok] `GET /admin`
+  - [ok] `GET|POST /admin/articles/create`
+  - [ok] `GET|POST /admin/articles/@id/edit`
+  - [ok] `POST /admin/articles/@id/delete`
 
 #### 2.3 Docker
 - [ ] Service `php-apache`.
@@ -63,22 +63,22 @@ Voici un plan d'action structuré sous forme de To-Do List, intégrant les élé
 
 ### 3) Front-Office SEO (P1)
 #### 3.1 Gabarits
-- [ ] Créer layout de base (header/nav/main/footer).
-- [ ] Ajouter partials (`head`, `flash message`, `pagination` si besoin).
+- [ok] Créer layout de base (header/nav/main/footer).
+- [ok] Ajouter partials (`head`, `flash message`, `pagination` si besoin).
 
 #### 3.2 Pages
-- [ ] Home : liste articles publiés, tri date DESC.
-- [ ] Page article via slug propre.
-- [ ] Gestion 404 SEO-friendly.
+- [ok] Home : liste articles publiés, tri date DESC.
+- [ok] Page article via slug propre.
+- [ok] Gestion 404 SEO-friendly.
 
 #### 3.3 SEO on-page
-- [ ] 1 seul `<h1>` par page.
-- [ ] Hiérarchie `<h2>/<h3>` cohérente.
-- [ ] `<title>` unique par page.
-- [ ] `<meta name="description">` unique.
-- [ ] `alt` pertinent sur toutes les images.
-- [ ] URL canonique article.
-- [ ] Open Graph minimum (`og:title`, `og:description`).
+- [ok] 1 seul `<h1>` par page.
+- [ok] Hiérarchie `<h2>/<h3>` cohérente.
+- [ok] `<title>` unique par page.
+- [ok] `<meta name="description">` unique.
+- [ok] `alt` pertinent sur toutes les images.
+- [ok] URL canonique article.
+- [ok] Open Graph minimum (`og:title`, `og:description`).
 - **DoD :** pages valides + métadonnées dynamiques complètes.
 
 ---
@@ -99,6 +99,9 @@ Voici un plan d'action structuré sous forme de To-Do List, intégrant les élé
   - [ ] slug unique
   - [ ] champs requis
   - [ ] longueur meta_desc (recommandée ~155-160).
+
+---eto 
+
 
 ##### 4.2.1 Intégration WYSIWYG (TinyMCE) — SEO
 - [ ] Inclure TinyMCE via CDN dans `edit_article.php`.
