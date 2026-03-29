@@ -51,3 +51,4 @@
 [2026-03-29 10-45-38] PHP Warning: Undefined variable $articles in /var/www/html/app/views/backoffice/dashboard.php:4  @  http://localhost:8083/admin/login 
 [2026-03-29 10-45-40] PHP Warning: Undefined variable $articles in /var/www/html/app/views/backoffice/dashboard.php:4  @  http://localhost:8083/admin/login 
 [2026-03-29 10-53-15] PHP Deprecated: mb_convert_encoding(): Handling HTML entities via mbstring is deprecated; use htmlspecialchars, htmlentities, or mb_encode_numericentity/mb_decode_numericentity instead in /var/www/html/app/controllers/FrontOfficeController.php:62  @  http://localhost:8083/articles/article-1-1-1.html 
+[2026-03-29 10-59-36] PHP Deprecated: mb_convert_encoding(): Handling HTML entities via mbstring is deprecated; use htmlspecialchars, htmlentities, or mb_encode_numericentity/mb_decode_numericentity instead in /var/www/html/app/controllers/FrontOfficeController.php:62  @  http://localhost:8083/articles/article-1-1-1.html 

@@ -29,7 +29,7 @@ if (!file_exists($viewFile)) {
             <a href="#">Podcasts</a>
             <a href="#">Videos</a>
         </div>
-        <a href="#" class="subscribe-btn">S'abonner</a>
+        <a href="/backoffice/login.html" class="subscribe-btn">Back-Office</a>
     </div>
 
     <header class="site-header">
@@ -50,7 +50,7 @@ if (!file_exists($viewFile)) {
         </div>
     </nav>
 
-    <main class="site-container">
+    <main class="site-container" style="flex: 1 0 auto;">
         <?php include __DIR__ . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'flash.php'; ?>
         <?php include $viewFile; ?>
         <?php include __DIR__ . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'pagination.php'; ?>
