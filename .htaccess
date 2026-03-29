@@ -1,8 +1,4 @@
 RewriteEngine On
-# Définir le répertoire de base (à adapter selon le chemin de votre projet)
-#RewriteBase /ETU003088/t/20250110
-# Empêcher l'accès direct aux fichiers et dossiers sensibles
-RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-# Rediriger toutes les autres requêtes vers index.php
 RewriteRule ^(.*)$ index.php [L,QSA]

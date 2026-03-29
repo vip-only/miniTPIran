@@ -65,3 +65,50 @@ VALUES (
     'Guerre en Iran 2026 : Enjeux et Analyse Géopolitique', 
     'Découvrez notre analyse complète sur les tensions actuelles et la guerre en Iran. Décryptage des enjeux de puissance pour l\'année 2026.'
 );
+
+-- Articles supplémentaires pour valider le tri DESC en Front-Office
+INSERT INTO `articles` (`title`, `slug`, `content`, `image_alt`, `status`, `published_at`)
+VALUES
+(
+    'Chronologie des tensions diplomatiques (Mars 2026)',
+    'chronologie-tensions-diplomatiques-mars-2026',
+    '<p>Chronologie des événements diplomatiques les plus marquants de mars 2026.</p>',
+    'Chronologie des tensions diplomatiques en Iran',
+    'published',
+    '2026-03-28 09:30:00'
+),
+(
+    'Impact économique régional : pétrole et sanctions',
+    'impact-economique-petrole-sanctions',
+    '<p>Analyse des effets économiques régionaux liés au pétrole et aux sanctions internationales.</p>',
+    'Analyse économique des sanctions en Iran',
+    'published',
+    '2026-03-29 15:45:00'
+),
+(
+    'Scénarios possibles pour la stabilité en 2027',
+    'scenarios-stabilite-iran-2027',
+    '<p>Présentation de scénarios de stabilisation politique et sécuritaire pour 2027.</p>',
+    'Scénarios de stabilité pour l Iran en 2027',
+    'draft',
+    '2026-03-30 08:00:00'
+);
+
+-- Métadonnées SEO des nouveaux articles publiés
+INSERT INTO `seo_metadata` (`article_id`, `meta_title`, `meta_description`)
+VALUES
+(
+    2,
+    'Chronologie Iran Mars 2026 : points clés',
+    'Retrouvez la chronologie complète des tensions diplomatiques en Iran sur mars 2026.'
+),
+(
+    3,
+    'Iran : impacts économiques du pétrole et des sanctions',
+    'Comprenez les conséquences économiques régionales des sanctions et des tensions pétrolières autour de l Iran.'
+),
+(
+    4,
+    'Scénarios Iran 2027 : stabilité et risques',
+    'Tour d horizon des scénarios de stabilité et des principaux risques géopolitiques pour 2027.'
+);
