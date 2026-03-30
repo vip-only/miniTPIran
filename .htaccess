@@ -3,14 +3,24 @@ RewriteBase /
 
 Options -MultiViews
 
-RewriteRule ^backoffice\.html$ index.php [L,QSA,NC]
-RewriteRule ^backoffice/login\.html$ index.php [L,QSA,NC]
-RewriteRule ^backoffice/logout\.html$ index.php [L,QSA,NC]
-RewriteRule ^backoffice/articles/create\.html$ index.php [L,QSA,NC]
-RewriteRule ^backoffice/articles/edit-([0-9]+)\.html$ index.php [L,QSA,NC]
-RewriteRule ^backoffice/articles/delete-([0-9]+)\.html$ index.php [L,QSA,NC]
+RewriteRule ^$ index.php?fo=home [L,QSA,NC]
+RewriteRule ^article/([a-z0-9-]+)$ index.php?fo=article_slug&slug=$1 [L,QSA,NC]
+RewriteRule ^articles/article-([0-9]+)-([0-9]+)-([0-9]+)\.html$ index.php?fo=article_legacy&id=$1&page=$2&rubrique=$3 [L,QSA,NC]
+RewriteRule ^articles/article\.php$ index.php?fo=article_legacy [L,QSA,NC]
 
-RewriteRule ^articles/article-([0-9]+)-([0-9]+)-([0-9]+)\.html$ articles/article.php?id=$1&page=$2&rubrique=$3 [L,QSA,NC]
+RewriteRule ^backoffice\.html$ index.php?bo=dashboard&ctx=legacy [L,QSA,NC]
+RewriteRule ^backoffice/login\.html$ index.php?bo=login&ctx=legacy [L,QSA,NC]
+RewriteRule ^backoffice/logout\.html$ index.php?bo=logout&ctx=legacy [L,QSA,NC]
+RewriteRule ^backoffice/articles/create\.html$ index.php?bo=article_create&ctx=legacy [L,QSA,NC]
+RewriteRule ^backoffice/articles/edit-([0-9]+)\.html$ index.php?bo=article_edit&ctx=legacy&id=$1 [L,QSA,NC]
+RewriteRule ^backoffice/articles/delete-([0-9]+)\.html$ index.php?bo=article_delete&ctx=legacy&id=$1 [L,QSA,NC]
+
+RewriteRule ^admin$ index.php?bo=dashboard&ctx=admin [L,QSA,NC]
+RewriteRule ^admin/login$ index.php?bo=login&ctx=admin [L,QSA,NC]
+RewriteRule ^admin/logout$ index.php?bo=logout&ctx=admin [L,QSA,NC]
+RewriteRule ^admin/articles/create$ index.php?bo=article_create&ctx=admin [L,QSA,NC]
+RewriteRule ^admin/articles/([0-9]+)/edit$ index.php?bo=article_edit&ctx=admin&id=$1 [L,QSA,NC]
+RewriteRule ^admin/articles/([0-9]+)/delete$ index.php?bo=article_delete&ctx=admin&id=$1 [L,QSA,NC]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

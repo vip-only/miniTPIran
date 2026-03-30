@@ -4,40 +4,39 @@ declare(strict_types=1);
 
 function handle_frontoffice_request(string $method, string $path): bool
 {
-    $routes = [
-        ['GET', '#^/$#', static function (array $m): void {
-            fo_render_home();
-        }],
-        ['GET', '#^/article/([a-z0-9\-]+)$#', static function (array $m): void {
-            fo_render_article_slug((string) $m[1]);
-        }],
-        ['GET', '#^/articles/article-(\d+)-(\d+)-(\d+)\.html$#', static function (array $m): void {
-            fo_render_article_legacy((int) $m[1], (int) $m[2], (int) $m[3]);
-        }],
-        ['GET', '#^/articles/article\.php$#', static function (array $m): void {
-            $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-            $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-            $rubrique = isset($_GET['rubrique']) ? (int) $_GET['rubrique'] : 0;
+    if ($method !== 'GET') {
+        return false;
+    }
 
-            if ($id > 0 && $page > 0 && $rubrique >= 0) {
-                fo_render_article_legacy($id, $page, $rubrique);
-                return;
-            }
+    $fo = (string) ($_GET['fo'] ?? '');
 
-            fo_render_not_found('/articles/article.php');
-        }],
-    ];
+    if ($fo === 'home' || $path === '/') {
+        fo_render_home();
+        return true;
+    }
 
-    foreach ($routes as [$routeMethod, $pattern, $handler]) {
-        if ($method !== $routeMethod) {
-            continue;
+    if ($fo === 'article_slug') {
+        $slug = trim((string) ($_GET['slug'] ?? ''));
+        if ($slug !== '' && preg_match('#^[a-z0-9\-]+$#', $slug)) {
+            fo_render_article_slug($slug);
+            return true;
         }
 
-        if (!preg_match($pattern, $path, $matches)) {
-            continue;
+        fo_render_not_found('/article/' . $slug);
+        return true;
+    }
+
+    if ($fo === 'article_legacy') {
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $rubrique = isset($_GET['rubrique']) ? (int) $_GET['rubrique'] : 0;
+
+        if ($id > 0 && $page > 0 && $rubrique >= 0) {
+            fo_render_article_legacy($id, $page, $rubrique);
+            return true;
         }
 
-        $handler($matches);
+        fo_render_not_found('/articles/article.php');
         return true;
     }
 
