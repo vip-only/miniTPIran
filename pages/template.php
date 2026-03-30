@@ -46,7 +46,7 @@ if (!file_exists($viewFile)) {
 
     <header class="site-header">
         <div class="header-inner">
-            <a class="site-logo" href="<?= htmlspecialchars($homePrettyUrl, ENT_QUOTES, 'UTF-8'); ?>">Le Monde<span>.</span></a>
+            <a class="site-logo" href="<?= htmlspecialchars($homePrettyUrl, ENT_QUOTES, 'UTF-8'); ?>">IranNews<span>.</span></a>
         </div>
     </header>
 
@@ -70,7 +70,7 @@ if (!file_exists($viewFile)) {
 
     <footer class="site-footer">
         <div class="site-container footer-inner">
-            <span class="footer-logo">Le Monde</span>
+            <span class="footer-logo">IranNews</span>
             <small>Mini-projet Web Design 2026</small>
         </div>
     </footer>
