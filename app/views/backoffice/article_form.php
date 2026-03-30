@@ -10,7 +10,10 @@ $metaTitleValue = (string) ($article['meta_title'] ?? '');
 $metaDescriptionValue = (string) ($article['meta_description'] ?? '');
 $metaRobotsValue = (string) ($article['meta_robots'] ?? 'index, follow');
 $canonicalUrlValue = (string) ($article['canonical_url'] ?? '');
-$publishedAtValue = (string) ($article['published_at'] ?? '');
+$publishedAtRaw = (string) ($article['published_at'] ?? '');
+$publishedAtValue = $publishedAtRaw !== ''
+    ? date('Y-m-d\TH:i', strtotime($publishedAtRaw))
+    : '';
 $formAction = (string) ($formAction ?? '/backoffice/articles/create.html');
 $pageTitle = $mode === 'edit' ? 'Modifier un article' : 'Créer un article';
 $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
@@ -117,7 +120,12 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
             <div class="grid">
                 <div>
                     <label for="published_at">Date de publication</label>
-                    <input type="text" id="published_at" name="published_at" value="<?= htmlspecialchars($publishedAtValue, ENT_QUOTES, 'UTF-8'); ?>" placeholder="YYYY-MM-DD HH:MM:SS">
+                    <input
+                        type="datetime-local"
+                        id="published_at"
+                        name="published_at"
+                        value="<?= htmlspecialchars($publishedAtValue, ENT_QUOTES, 'UTF-8'); ?>"
+                    >
                 </div>
 
                 <div>

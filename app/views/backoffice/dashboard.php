@@ -1,7 +1,87 @@
 <?php
 $articles = is_array($articles ?? null) ? $articles : [];
-$gridArticles = array_slice($articles, 0, 3);
+$gridArticles = $articles;
 ?>
+
+<style>
+    .three-col {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .col-article {
+        background: #fff;
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.04);
+        overflow: hidden;
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+    .col-article:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(0,0,0,.08);
+        border-color: rgba(0,0,0,.14);
+    }
+
+    .col-article img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+        background: #f3f3f3;
+    }
+
+    .col-article .card-content {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        min-height: 100%;
+    }
+
+    .col-article h3 {
+        font-size: 1.05rem;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .col-article p {
+        margin: 0;
+        color: #555;
+        font-size: .95rem;
+    }
+
+    .col-article .meta {
+        color: #777;
+        font-size: .82rem;
+    }
+
+    .col-article .actions {
+        margin-top: auto;
+        display: flex;
+        justify-content: flex-end;
+        gap: .5rem;
+        padding-top: .75rem;
+    }
+
+    .col-article .section-label {
+        display: inline-block;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: #666;
+    }
+
+    .article-status {
+        color: #b91c1c;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        font-size: .72rem;
+    }
+</style>
 
 <div class="section-header">
     <h2>Back-Office</h2>
@@ -34,29 +114,39 @@ $gridArticles = array_slice($articles, 0, 3);
 <section class="three-col">
     <?php foreach ($gridArticles as $article): ?>
         <article class="col-article d-flex flex-column h-100">
-            <div class="flex-grow-1 d-flex flex-column">
-                <?php if (!empty($article['image_url'])): ?>
-                    <img src="<?= htmlspecialchars((string) $article['image_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars((string) ($article['image_alt'] ?? $article['title']), ENT_QUOTES, 'UTF-8'); ?>">
-                <?php endif; ?>
-                <span class="section-label"><?= htmlspecialchars((string) ($article['status'] ?? 'draft'), ENT_QUOTES, 'UTF-8'); ?></span>
+            <?php if (!empty($article['image_url'])): ?>
+                <img
+                    src="<?= htmlspecialchars((string) $article['image_url'], ENT_QUOTES, 'UTF-8'); ?>"
+                    alt="<?= htmlspecialchars((string) ($article['image_alt'] ?? $article['title']), ENT_QUOTES, 'UTF-8'); ?>"
+                    loading="lazy"
+                    decoding="async"
+                >
+            <?php endif; ?>
+
+            <div class="card-content">
+                <span class="article-status">
+                    <?= htmlspecialchars((string) ($article['status'] ?? 'draft'), ENT_QUOTES, 'UTF-8'); ?>
+                </span>
+
                 <h3><?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
                 <p><?= htmlspecialchars(mb_substr(trim(strip_tags((string) $article['content'])), 0, 150), ENT_QUOTES, 'UTF-8'); ?>...</p>
-                <div class="meta mb-2">Publié le <?= htmlspecialchars((string) $article['published_at'], ENT_QUOTES, 'UTF-8'); ?></div>
-            </div>
+                <div class="meta">Publié le <?= htmlspecialchars((string) $article['published_at'], ENT_QUOTES, 'UTF-8'); ?></div>
 
-            <div class="mt-auto d-flex gap-2 flex-wrap align-items-center justify-content-end">
-                <a class="btn btn-outline-warning btn-sm d-inline-flex align-items-center justify-content-center"
-                   href="/backoffice/articles/edit-<?= (int) $article['id']; ?>.html"
-                   title="Modifier"
-                   aria-label="Modifier"
-                   style="width: 2rem; height: 2rem; padding: 0;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708L5.207 13.793 1 15l1.207-4.207L12.146.854zM11.207 2 2 11.207V13h1.793L13 3.793 11.207 2z"/></svg>
-                </a>
-                <form class="d-inline" method="post" action="/backoffice/articles/delete-<?= (int) $article['id']; ?>.html" onsubmit="return confirm('Supprimer cet article ?');">
-                    <button class="btn btn-outline-danger btn-sm d-inline-flex align-items-center justify-content-center" type="submit" title="Supprimer" aria-label="Supprimer" style="width: 2rem; height: 2rem; padding: 0;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.5 5.5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5zm3-.5H3.5a.5.5 0 0 0 0 1H4v7.5A1.5 1.5 0 0 0 5.5 15h5A1.5 1.5 0 0 0 12 13.5V6h.5a.5.5 0 0 0 0-1H10V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v1H3.5a.5.5 0 0 0 0 1H11v7.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5V6h6V5zm-4-1V4a1 1 0 0 1 2 0v1H7.5z"/></svg>
-                    </button>
-                </form>
+                <div class="actions">
+                    <a class="btn btn-outline-warning btn-sm d-inline-flex align-items-center justify-content-center"
+                       href="/backoffice/articles/edit-<?= (int) $article['id']; ?>.html"
+                       title="Modifier"
+                       aria-label="Modifier"
+                       style="width: 2rem; height: 2rem; padding: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708L5.207 13.793 1 15l1.207-4.207L12.146.854zM11.207 2 2 11.207V13h1.793L13 3.793 11.207 2z"/></svg>
+                    </a>
+
+                    <form class="d-inline" method="post" action="/backoffice/articles/delete-<?= (int) $article['id']; ?>.html" onsubmit="return confirm('Supprimer cet article ?');">
+                        <button class="btn btn-outline-danger btn-sm d-inline-flex align-items-center justify-content-center" type="submit" title="Supprimer" aria-label="Supprimer" style="width: 2rem; height: 2rem; padding: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.5 5.5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5zm3-.5H3.5a.5.5 0 0 0 0 1H4v7.5A1.5 1.5 0 0 0 5.5 15h5A1.5 1.5 0 0 0 12 13.5V6h.5a.5.5 0 0 0 0-1H10V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v1H3.5a.5.5 0 0 0 0 1H11v7.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5V6h6V5zm-4-1V4a1 1 0 0 1 2 0v1H7.5z"/></svg>
+                        </button>
+                    </form>
+                </div>
             </div>
         </article>
     <?php endforeach; ?>
