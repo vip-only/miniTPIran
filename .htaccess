@@ -3,8 +3,11 @@ RewriteBase /
 
 Options -MultiViews
 
-RewriteRule ^$ index.php?fo=home [L,QSA,NC]
+RewriteRule ^$ /international/actualites-guerre-iran.html [R=302,L,NC]
+RewriteRule ^international/actualites-guerre-iran\.html$ index.php?fo=home [L,QSA,NC]
+RewriteRule ^international/?$ index.php?fo=home [L,QSA,NC]
 RewriteRule ^article/([a-z0-9-]+)$ index.php?fo=article_slug&slug=$1 [L,QSA,NC]
+RewriteRule ^international/article/([0-9]{4})/([0-9]{2})/([0-9]{2})/([a-z0-9-]+)_([0-9]+)_([0-9]+)\.html$ index.php?fo=article_pretty&year=$1&month=$2&day=$3&slug=$4&id=$5&rubrique=$6 [L,QSA,NC]
 RewriteRule ^articles/article-([0-9]+)-([0-9]+)-([0-9]+)\.html$ index.php?fo=article_legacy&id=$1&page=$2&rubrique=$3 [L,QSA,NC]
 RewriteRule ^articles/article\.php$ index.php?fo=article_legacy [L,QSA,NC]
 

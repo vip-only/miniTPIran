@@ -1,5 +1,6 @@
 <?php
 $baseUrl = $baseUrl ?? app_base_url();
+$homePrettyUrl = $baseUrl . ltrim(fo_home_pretty_path(), '/');
 $pageName = $page ?? '404';
 $routes = is_array($routes ?? null) ? $routes : [];
 $loginUrl = (string) ($routes['login'] ?? '/backoffice/login.html');
@@ -45,13 +46,13 @@ if (!file_exists($viewFile)) {
 
     <header class="site-header">
         <div class="header-inner">
-            <a class="site-logo" href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8'); ?>">Le Monde<span>.</span></a>
+            <a class="site-logo" href="<?= htmlspecialchars($homePrettyUrl, ENT_QUOTES, 'UTF-8'); ?>">Le Monde<span>.</span></a>
         </div>
     </header>
 
     <nav class="main-nav">
         <div class="nav-inner">
-            <a href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8'); ?>" class="active">A la une</a>
+            <a href="<?= htmlspecialchars($homePrettyUrl, ENT_QUOTES, 'UTF-8'); ?>" class="active">A la une</a>
             <a href="#">International</a>
             <a href="#">France</a>
             <a href="#">Economie</a>

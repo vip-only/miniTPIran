@@ -1,5 +1,7 @@
 <?php
 $baseUrl = $baseUrl ?? app_base_url();
+$homePrettyPath = fo_home_pretty_path();
+$homePrettyUrl = $baseUrl . ltrim($homePrettyPath, '/');
 $articles = is_array($articles ?? null) ? array_values($articles) : [];
 $mainArticle = $articles[0] ?? null;
 $sidebarArticles = array_slice($articles, 1, 3);
@@ -27,7 +29,7 @@ foreach (array_slice($articles, 0, 10) as $index => $article) {
     $structuredArticles[] = [
         '@type' => 'ListItem',
         'position' => $index + 1,
-        'url' => $baseUrl . 'articles/article-' . (int) ($article['id'] ?? 0) . '-1-1.html',
+        'url' => $baseUrl . ltrim(fo_article_pretty_url($article), '/'),
         'name' => (string) ($article['title'] ?? ''),
         'datePublished' => $isoDate !== '' ? $isoDate : null,
     ];
@@ -69,6 +71,11 @@ $jsonLd = [
         <?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT); ?>
     </script>
 
+    <section class="article-page" style="margin-top: 1.2rem; margin-bottom: 0.8rem;">
+        <h2 style="margin-top:0;">Point d entree</h2>
+        <p style="margin-bottom:0;">Bienvenue sur le FrontOffice. Le point d entree principal est <strong><?= htmlspecialchars($homePrettyPath, ENT_QUOTES, 'UTF-8'); ?></strong> avec des URLs detaillees en slug + id pour un affichage SEO clair.</p>
+    </section>
+
     <section class="hero" aria-labelledby="featured-article-title">
         <?php if ($mainArticle !== null): ?>
             <article class="hero-main" aria-labelledby="featured-article-title">
@@ -83,7 +90,7 @@ $jsonLd = [
                 <?php endif; ?>
                 <span class="section-label">International</span>
                 <h1 id="featured-article-title">
-                    <a href="<?= htmlspecialchars($baseUrl . 'articles/article-' . (int) $mainArticle['id'] . '-1-1.html', ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article à la une : <?= htmlspecialchars((string) $mainArticle['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                    <a href="<?= htmlspecialchars($baseUrl . ltrim(fo_article_pretty_url($mainArticle), '/'), ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article à la une : <?= htmlspecialchars((string) $mainArticle['title'], ENT_QUOTES, 'UTF-8'); ?>">
                         <?= htmlspecialchars((string) $mainArticle['title'], ENT_QUOTES, 'UTF-8'); ?>
                     </a>
                 </h1>
@@ -113,7 +120,7 @@ $jsonLd = [
                     <?php endif; ?>
                     <span class="section-label">Actualite</span>
                     <h3 id="sidebar-article-<?= (int) $article['id']; ?>">
-                        <a href="<?= htmlspecialchars($baseUrl . 'articles/article-' . (int) $article['id'] . '-1-1.html', ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article : <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <a href="<?= htmlspecialchars($baseUrl . ltrim(fo_article_pretty_url($article), '/'), ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article : <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>">
                             <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>
                         </a>
                     </h3>
@@ -126,7 +133,7 @@ $jsonLd = [
         <div class="section-header">
             <h2 id="news-grid-title">Actualites</h2>
             <?php if ($showAllArticles): ?>
-                <a href="/" aria-label="Réduire la liste des articles">Réduire</a>
+                <a href="<?= htmlspecialchars($homePrettyUrl, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Réduire la liste des articles">Réduire</a>
             <?php else: ?>
                 <a href="?view=all#all-articles" aria-label="Voir tous les articles">Voir tout</a>
             <?php endif; ?>
@@ -145,7 +152,7 @@ $jsonLd = [
                     <?php endif; ?>
                     <span class="section-label">Analyse</span>
                     <h3 id="grid-article-<?= (int) $article['id']; ?>">
-                        <a href="<?= htmlspecialchars($baseUrl . 'articles/article-' . (int) $article['id'] . '-1-1.html', ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article : <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <a href="<?= htmlspecialchars($baseUrl . ltrim(fo_article_pretty_url($article), '/'), ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article : <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>">
                             <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>
                         </a>
                     </h3>
@@ -180,7 +187,7 @@ $jsonLd = [
                         <?php endif; ?>
                         <span class="section-label">Article</span>
                         <h3 id="all-article-<?= (int) $article['id']; ?>">
-                            <a href="<?= htmlspecialchars($baseUrl . 'articles/article-' . (int) $article['id'] . '-1-1.html', ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article : <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <a href="<?= htmlspecialchars($baseUrl . ltrim(fo_article_pretty_url($article), '/'), ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article : <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>">
                                 <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>
                             </a>
                         </h3>

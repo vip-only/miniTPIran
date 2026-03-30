@@ -11,6 +11,42 @@ function fo_build_canonical(string $path = ''): string
     return $cleanPath === '' ? $base . '/' : $base . '/' . $cleanPath;
 }
 
+function fo_home_pretty_path(): string
+{
+    return '/international/actualites-guerre-iran.html';
+}
+
+function fo_slugify(string $value): string
+{
+    $value = trim(mb_strtolower($value));
+    $value = preg_replace('/[\x{0300}-\x{036f}]/u', '', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value) ?: $value) ?? $value;
+    $value = preg_replace('/[^a-z0-9]+/', '-', $value) ?? $value;
+    $value = trim($value, '-');
+
+    return $value !== '' ? $value : 'article';
+}
+
+function fo_article_pretty_url(array $article, int $rubrique = 3210): string
+{
+    $id = (int) ($article['id'] ?? 0);
+    $slug = trim((string) ($article['slug'] ?? ''));
+    if ($slug === '') {
+        $slug = fo_slugify((string) ($article['title'] ?? 'article'));
+    }
+
+    $publishedAt = trim((string) ($article['published_at'] ?? ''));
+    $ts = $publishedAt !== '' ? strtotime($publishedAt) : false;
+    if ($ts === false) {
+        $ts = time();
+    }
+
+    $yyyy = date('Y', $ts);
+    $mm = date('m', $ts);
+    $dd = date('d', $ts);
+
+    return '/international/article/' . $yyyy . '/' . $mm . '/' . $dd . '/' . $slug . '_' . $id . '_' . $rubrique . '.html';
+}
+
 function fo_fallback_description(string $title, string $content = ''): string
 {
     $text = trim(preg_replace('/\s+/', ' ', strip_tags($content)) ?? '');
@@ -74,7 +110,7 @@ function fo_normalize_article_html(string $html, string $fallbackAlt): string
 
 function fo_get_home_articles(): array
 {
-    $stmt = app_db()->prepare("SELECT id, title, content, image_url, image_alt, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC, id DESC");
+    $stmt = app_db()->prepare("SELECT id, title, slug, content, image_url, image_alt, published_at FROM articles WHERE status = 'published' ORDER BY published_at DESC, id DESC");
     $stmt->execute();
     $rows = $stmt->fetchAll();
 
@@ -84,7 +120,7 @@ function fo_get_home_articles(): array
 function fo_get_article_by_id(int $id): ?array
 {
     $stmt = app_db()->prepare(
-        "SELECT a.id, a.title, a.content, a.image_url, a.image_alt, a.published_at,
+    "SELECT a.id, a.title, a.slug, a.content, a.image_url, a.image_alt, a.published_at,
                 s.meta_title, s.meta_description, s.canonical_url
          FROM articles a
          LEFT JOIN seo_metadata s ON s.article_id = a.id
@@ -121,7 +157,7 @@ function fo_render_home(string $info = ''): void
         'page' => 'home',
         'title' => 'Accueil | Mini Projet Web',
         'metaDescription' => 'Actualites et analyses sur la guerre en Iran.',
-        'canonicalUrl' => fo_build_canonical('/'),
+        'canonicalUrl' => fo_build_canonical(ltrim(fo_home_pretty_path(), '/')),
         'ogType' => 'website',
         'articles' => $articles,
         'baseUrl' => app_base_url(),
@@ -168,10 +204,15 @@ function fo_render_article_legacy(int $id, int $page, int $rubrique): void
         'article' => $article,
         'title' => $metaTitle !== '' ? $metaTitle : ((string) $article['title'] . ' | Mini Projet Web'),
         'metaDescription' => $metaDescription !== '' ? mb_substr($metaDescription, 0, 155) : fo_fallback_description((string) $article['title'], (string) $article['content']),
-        'canonicalUrl' => $canonical !== '' ? $canonical : fo_build_canonical('articles/article-' . $id . '-' . $page . '-' . $rubrique . '.html'),
+        'canonicalUrl' => $canonical !== '' ? $canonical : fo_build_canonical(ltrim(fo_article_pretty_url($article, $rubrique), '/')),
         'ogType' => 'article',
         'baseUrl' => app_base_url(),
     ]);
+}
+
+function fo_render_article_pretty(int $id, int $rubrique = 3210): void
+{
+    fo_render_article_legacy($id, 1, $rubrique);
 }
 
 function fo_render_article_slug(string $slug): void

@@ -40,5 +40,18 @@ function handle_frontoffice_request(string $method, string $path): bool
         return true;
     }
 
+    if ($fo === 'article_pretty') {
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        $rubrique = isset($_GET['rubrique']) ? (int) $_GET['rubrique'] : 3210;
+
+        if ($id > 0) {
+            fo_render_article_pretty($id, $rubrique);
+            return true;
+        }
+
+        fo_render_not_found('/international/article');
+        return true;
+    }
+
     return false;
 }
