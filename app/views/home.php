@@ -4,6 +4,7 @@ $articles = is_array($articles ?? null) ? array_values($articles) : [];
 $mainArticle = $articles[0] ?? null;
 $sidebarArticles = array_slice($articles, 1, 3);
 $gridArticles = array_slice($articles, 0, 3);
+$showAllArticles = (string) ($_GET['view'] ?? '') === 'all';
 
 $formatDateTime = static function (?string $value): array {
     $value = trim((string) $value);
@@ -124,7 +125,11 @@ $jsonLd = [
     <section aria-labelledby="news-grid-title">
         <div class="section-header">
             <h2 id="news-grid-title">Actualites</h2>
-            <a href="#all-articles" aria-label="Voir tous les articles">Voir tout</a>
+            <?php if ($showAllArticles): ?>
+                <a href="/" aria-label="Réduire la liste des articles">Réduire</a>
+            <?php else: ?>
+                <a href="?view=all#all-articles" aria-label="Voir tous les articles">Voir tout</a>
+            <?php endif; ?>
         </div>
 
         <section class="three-col" aria-label="Liste des trois premiers articles">
@@ -157,38 +162,40 @@ $jsonLd = [
             <?php endforeach; ?>
         </section>
 
-        <div class="section-header" id="all-articles">
-            <h2>Tous les articles</h2>
-        </div>
+        <?php if ($showAllArticles): ?>
+            <div class="section-header" id="all-articles">
+                <h2>Tous les articles</h2>
+            </div>
 
-        <section class="three-col" aria-label="Liste complète des articles">
-            <?php foreach ($articles as $article): ?>
-                <article class="col-article" aria-labelledby="all-article-<?= (int) $article['id']; ?>">
-                    <?php if (!empty($article['image_url'])): ?>
-                        <img
-                            src="<?= htmlspecialchars((string) $article['image_url'], ENT_QUOTES, 'UTF-8'); ?>"
-                            alt="<?= htmlspecialchars((string) ($article['image_alt'] ?? $article['title']), ENT_QUOTES, 'UTF-8'); ?>"
-                            loading="lazy"
-                            decoding="async"
-                        >
-                    <?php endif; ?>
-                    <span class="section-label">Article</span>
-                    <h3 id="all-article-<?= (int) $article['id']; ?>">
-                        <a href="<?= htmlspecialchars($baseUrl . 'articles/article-' . (int) $article['id'] . '-1-1.html', ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article : <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>">
-                            <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>
-                        </a>
-                    </h3>
-                    <p><?= htmlspecialchars(mb_substr(trim(strip_tags((string) $article['content'])), 0, 150), ENT_QUOTES, 'UTF-8'); ?>...</p>
-                    <div class="meta">
-                        <?php [$allIsoDate, $allHumanDate] = $formatDateTime((string) ($article['published_at'] ?? '')); ?>
-                        <?php if ($allIsoDate !== ''): ?>
-                            <time datetime="<?= htmlspecialchars($allIsoDate, ENT_QUOTES, 'UTF-8'); ?>">Publié le <?= htmlspecialchars($allHumanDate, ENT_QUOTES, 'UTF-8'); ?></time>
-                        <?php else: ?>
-                            <span>Publié le <?= htmlspecialchars((string) $article['published_at'], ENT_QUOTES, 'UTF-8'); ?></span>
+            <section class="three-col" aria-label="Liste complète des articles">
+                <?php foreach ($articles as $article): ?>
+                    <article class="col-article" aria-labelledby="all-article-<?= (int) $article['id']; ?>">
+                        <?php if (!empty($article['image_url'])): ?>
+                            <img
+                                src="<?= htmlspecialchars((string) $article['image_url'], ENT_QUOTES, 'UTF-8'); ?>"
+                                alt="<?= htmlspecialchars((string) ($article['image_alt'] ?? $article['title']), ENT_QUOTES, 'UTF-8'); ?>"
+                                loading="lazy"
+                                decoding="async"
+                            >
                         <?php endif; ?>
-                    </div>
-                </article>
-            <?php endforeach; ?>
-        </section>
+                        <span class="section-label">Article</span>
+                        <h3 id="all-article-<?= (int) $article['id']; ?>">
+                            <a href="<?= htmlspecialchars($baseUrl . 'articles/article-' . (int) $article['id'] . '-1-1.html', ENT_QUOTES, 'UTF-8'); ?>" aria-label="Lire l'article : <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8'); ?>
+                            </a>
+                        </h3>
+                        <p><?= htmlspecialchars(mb_substr(trim(strip_tags((string) $article['content'])), 0, 150), ENT_QUOTES, 'UTF-8'); ?>...</p>
+                        <div class="meta">
+                            <?php [$allIsoDate, $allHumanDate] = $formatDateTime((string) ($article['published_at'] ?? '')); ?>
+                            <?php if ($allIsoDate !== ''): ?>
+                                <time datetime="<?= htmlspecialchars($allIsoDate, ENT_QUOTES, 'UTF-8'); ?>">Publié le <?= htmlspecialchars($allHumanDate, ENT_QUOTES, 'UTF-8'); ?></time>
+                            <?php else: ?>
+                                <span>Publié le <?= htmlspecialchars((string) $article['published_at'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </section>
+        <?php endif; ?>
     </section>
 <?php endif; ?>
