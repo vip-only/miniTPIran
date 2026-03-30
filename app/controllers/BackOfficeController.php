@@ -8,10 +8,92 @@ use PDO;
 
 class BackOfficeController
 {
+    private function getUploadDirectory(): string
+    {
+        return dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'uploads';
+    }
+
+    private function isLocalUploadPath(?string $path): bool
+    {
+        $path = trim((string) $path);
+        return strpos($path, '/assets/images/uploads/') === 0;
+    }
+
+    private function deleteUploadedImageIfLocal(?string $path): void
+    {
+        if (!$this->isLocalUploadPath($path)) {
+            return;
+        }
+
+        $relativePath = ltrim((string) $path, '/');
+        $absolutePath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+        if (is_file($absolutePath)) {
+            @unlink($absolutePath);
+        }
+    }
+
+    private function processUploadedImage(?array $file, string &$error): ?string
+    {
+        if (!is_array($file) || (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+
+        if ((int) ($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+            $error = 'Echec de l\'upload de l\'image.';
+            return null;
+        }
+
+        $tmpName = (string) ($file['tmp_name'] ?? '');
+        if ($tmpName === '' || !is_uploaded_file($tmpName)) {
+            $error = 'Fichier image invalide.';
+            return null;
+        }
+
+        $maxSize = 5 * 1024 * 1024;
+        if ((int) ($file['size'] ?? 0) > $maxSize) {
+            $error = 'Image trop volumineuse (max 5 Mo).';
+            return null;
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = $finfo ? (string) finfo_file($finfo, $tmpName) : '';
+        if ($finfo) {
+            finfo_close($finfo);
+        }
+
+        $allowedMimes = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            'image/gif' => 'gif',
+        ];
+
+        if (!isset($allowedMimes[$mime])) {
+            $error = 'Format image non supporte (jpg, png, webp, gif).';
+            return null;
+        }
+
+        $uploadDir = $this->getUploadDirectory();
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
+            $error = 'Impossible de creer le dossier uploads.';
+            return null;
+        }
+
+        $extension = $allowedMimes[$mime];
+        $fileName = 'article_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
+        $destination = $uploadDir . DIRECTORY_SEPARATOR . $fileName;
+
+        if (!move_uploaded_file($tmpName, $destination)) {
+            $error = 'Impossible d\'enregistrer l\'image uploadée.';
+            return null;
+        }
+
+        return '/assets/images/uploads/' . $fileName;
+    }
+
     private function requestData(): array
     {
-        $request = Flight::request();
-        $data = $request->data->getData();
+        $data = $_POST;
 
         return is_array($data) ? $data : [];
     }
@@ -50,14 +132,19 @@ class BackOfficeController
 
     private function renderArticleForm(array $article = [], string $mode = 'create', string $error = '', string $info = ''): void
     {
+        $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
+        $isAdminPath = strpos($path, '/admin/') === 0;
+
         Flight::render('backoffice/article_form', [
             'mode' => $mode,
             'error' => $error,
             'info' => $info,
             'article' => $article,
             'formAction' => $mode === 'edit'
-                ? '/backoffice/articles/edit-' . (int) ($article['id'] ?? 0) . '.html'
-                : '/backoffice/articles/create.html',
+                ? ($isAdminPath
+                    ? '/admin/articles/' . (int) ($article['id'] ?? 0) . '/edit'
+                    : '/backoffice/articles/edit-' . (int) ($article['id'] ?? 0) . '.html')
+                : ($isAdminPath ? '/admin/articles/create' : '/backoffice/articles/create.html'),
         ]);
     }
 
@@ -182,13 +269,20 @@ class BackOfficeController
         $data = $this->requestData();
         $title = trim((string) ($data['title'] ?? ''));
         $content = trim((string) ($data['content'] ?? ''));
-        $imageUrl = trim((string) ($data['image_url'] ?? ''));
         $imageAlt = trim((string) ($data['image_alt'] ?? ''));
         $status = in_array(($data['status'] ?? 'draft'), ['draft', 'published'], true) ? (string) $data['status'] : 'draft';
         $metaTitle = trim((string) ($data['meta_title'] ?? ''));
         $metaDescription = trim((string) ($data['meta_description'] ?? ''));
         $metaRobots = trim((string) ($data['meta_robots'] ?? 'index, follow'));
         $canonicalUrl = trim((string) ($data['canonical_url'] ?? ''));
+
+        $uploadError = '';
+        $uploadedImagePath = $this->processUploadedImage($_FILES['image_file'] ?? null, $uploadError);
+        if ($uploadError !== '') {
+            http_response_code(422);
+            $this->renderArticleForm($data, 'create', $uploadError);
+            return;
+        }
 
         if ($title === '' || $content === '') {
             http_response_code(422);
@@ -211,7 +305,7 @@ class BackOfficeController
                 'title' => $title,
                 'slug' => $slug,
                 'content' => $content,
-                'image_url' => $imageUrl !== '' ? $imageUrl : null,
+                'image_url' => $uploadedImagePath,
                 'image_alt' => $imageAlt,
                 'status' => $status,
                 'published_at' => $publishedAt,
@@ -278,13 +372,24 @@ class BackOfficeController
         $data = $this->requestData();
         $title = trim((string) ($data['title'] ?? ''));
         $content = trim((string) ($data['content'] ?? ''));
-        $imageUrl = trim((string) ($data['image_url'] ?? ''));
         $imageAlt = trim((string) ($data['image_alt'] ?? ''));
         $status = in_array(($data['status'] ?? 'draft'), ['draft', 'published'], true) ? (string) $data['status'] : 'draft';
         $metaTitle = trim((string) ($data['meta_title'] ?? ''));
         $metaDescription = trim((string) ($data['meta_description'] ?? ''));
         $metaRobots = trim((string) ($data['meta_robots'] ?? 'index, follow'));
         $canonicalUrl = trim((string) ($data['canonical_url'] ?? ''));
+
+        $uploadError = '';
+        $uploadedImagePath = $this->processUploadedImage($_FILES['image_file'] ?? null, $uploadError);
+        if ($uploadError !== '') {
+            http_response_code(422);
+            $data['id'] = $id;
+            $data['image_url'] = (string) ($existing['image_url'] ?? '');
+            $this->renderArticleForm($data, 'edit', $uploadError);
+            return;
+        }
+
+        $finalImagePath = $uploadedImagePath !== null ? $uploadedImagePath : (($existing['image_url'] ?? '') !== '' ? (string) $existing['image_url'] : null);
 
         if ($title === '' || $content === '') {
             http_response_code(422);
@@ -316,11 +421,15 @@ class BackOfficeController
                 'title' => $title,
                 'slug' => $slug,
                 'content' => $content,
-                'image_url' => $imageUrl !== '' ? $imageUrl : null,
+                'image_url' => $finalImagePath,
                 'image_alt' => $imageAlt,
                 'status' => $status,
                 'published_at' => $publishedAt,
             ]);
+
+            if ($uploadedImagePath !== null && !empty($existing['image_url']) && (string) $existing['image_url'] !== $uploadedImagePath) {
+                $this->deleteUploadedImageIfLocal((string) $existing['image_url']);
+            }
 
             if ($canonicalUrl === '') {
                 $canonicalUrl = '/article/' . $slug;
@@ -362,8 +471,14 @@ class BackOfficeController
             return;
         }
 
+        $existing = $this->fetchArticleById($id);
+
         $stmt = Flight::db()->prepare('DELETE FROM articles WHERE id = :id');
         $stmt->execute(['id' => $id]);
+
+        if ($existing !== null) {
+            $this->deleteUploadedImageIfLocal((string) ($existing['image_url'] ?? ''));
+        }
 
         $this->renderDashboard('Article supprimé.');
     }

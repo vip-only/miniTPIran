@@ -65,7 +65,7 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
             <div class="info"><?= htmlspecialchars((string) $info, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
 
-        <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>">
+        <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" enctype="multipart/form-data">
             <div class="grid">
                 <div>
                     <label for="title">Titre</label>
@@ -87,8 +87,9 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
 
             <div class="grid">
                 <div>
-                    <label for="image_url">Image URL</label>
-                    <input type="text" id="image_url" name="image_url" value="<?= htmlspecialchars($imageUrlValue, ENT_QUOTES, 'UTF-8'); ?>">
+                    <label for="image_file">Image (upload)</label>
+                    <input type="file" id="image_file" name="image_file" accept="image/jpeg,image/png,image/webp,image/gif">
+                    <div class="hint">Formats: JPG, PNG, WEBP, GIF. Taille max: 5 Mo.</div>
                 </div>
 
                 <div>
@@ -96,6 +97,13 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
                     <input type="text" id="image_alt" name="image_alt" value="<?= htmlspecialchars($imageAltValue, ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
             </div>
+
+            <?php if ($imageUrlValue !== ''): ?>
+                <div style="margin-top: .8rem;">
+                    <div class="hint" style="margin-bottom: .45rem;">Image actuelle:</div>
+                    <img src="<?= htmlspecialchars($imageUrlValue, ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($imageAltValue !== '' ? $imageAltValue : 'Image actuelle', ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 280px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                </div>
+            <?php endif; ?>
 
             <div class="grid">
                 <div>
