@@ -9,7 +9,7 @@
                 src="<?= htmlspecialchars((string) $article['image_url'], ENT_QUOTES, 'UTF-8'); ?>"
                 alt="<?= htmlspecialchars((string) ($article['image_alt'] ?? $article['title'] ?? 'Illustration article'), ENT_QUOTES, 'UTF-8'); ?>"
                 loading="lazy"
-                style="max-width: 100%; height: auto; margin-bottom: 1rem;"
+                style="width: 250px; max-width: 100%; height: auto; margin-bottom: 1rem;"
             >
         </figure>
     <?php endif; ?>
