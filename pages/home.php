@@ -71,11 +71,6 @@ $jsonLd = [
         <?= json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT); ?>
     </script>
 
-    <section class="article-page" style="margin-top: 1.2rem; margin-bottom: 0.8rem;">
-        <h2 style="margin-top:0;">Point d entree</h2>
-        <p style="margin-bottom:0;">Bienvenue sur le FrontOffice. Le point d entree principal est <strong><?= htmlspecialchars($homePrettyPath, ENT_QUOTES, 'UTF-8'); ?></strong> avec des URLs detaillees en slug + id pour un affichage SEO clair.</p>
-    </section>
-
     <section class="hero" aria-labelledby="featured-article-title">
         <?php if ($mainArticle !== null): ?>
             <article class="hero-main" aria-labelledby="featured-article-title">
