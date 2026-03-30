@@ -1,76 +1,180 @@
-# Flight PHP Skeleton App
+# MiniTPIran - Document Technique Et Livrable
 
-Use this skeleton application to quickly setup and start working on a new Flight PHP application. This application uses the latest version of Flight PHP v3.
+## 1) Informations Etudiant
+- Nom et prenom: A COMPLETER
+- Num ETU: A COMPLETER
+- Promotion: A COMPLETER
+- Date de rendu: 31/03/2026
 
-This skeleton application was built for Composer. You also could download a zip of this repo, downloading a zip of the [flightphp/core](https://github.com/flightphp/core) repo, and manually autoload the files by running `require('flight/autoload.php')` in your `app/config/bootstrap.php` file.
+## 2) Objectif Du Projet
+Application web d'actualites (theme Iran) avec:
+- FrontOffice (consultation articles)
+- BackOffice (authentification admin + CRUD articles + upload image)
+- Contraintes SEO de base (title, meta description, alt, URLs propres)
 
-## Installation
+## 3) Stack Technique
+- PHP (Flight PHP)
+- Apache
+- MySQL 8
+- Docker Compose
+- TinyMCE (edition contenu BO)
 
-Run this command from the directory in which you want to install your new Flight PHP application. (this will require PHP 7.4 or newer)
+Fichiers principaux:
+- [app/config/routes.php](app/config/routes.php)
+- [app/controllers/FrontOfficeController.php](app/controllers/FrontOfficeController.php)
+- [app/controllers/BackOfficeController.php](app/controllers/BackOfficeController.php)
+- [app/views/home.php](app/views/home.php)
+- [app/views/backoffice/article_form.php](app/views/backoffice/article_form.php)
+- [sql/script.sql](sql/script.sql)
+- [docker-compose.yml](docker-compose.yml)
 
-```bash
-composer create-project flightphp/skeleton cool-project-name
-```
-
-Replace `cool-project-name` with the desired directory name for your new application.
-
-After you create the project, make sure you go to the `app/config/config.php` and `app/config/services.php` and uncomment the lines related to the database you want to use before you get started.
-
-**Note:** If you are installing with PHP 8.0 or above and want to use `tracy-extensions` be sure to run `composer require --dev flightphp/tracy-extensions "^0.2"` after the project is created.
-
-### Robust Setup of the Application
-
-This skeleton will come with 2 versions of a starter application. The robust version is a fully structured application meant for projects that you anticipate will be a bigger size. This is setup with object oriented programming in mind so that it is easier to unit test and scale your project with multiple developers (or make it easier on yourself).
-
-The robust version adds an `app/` directory where everything has a basic structure. This is how this skeleton is configured by default.
-
-### Simple Setup of the Application
-
-This is basically a single file application. The only exception to this is the config file which is still in the `app/config/` directory. This is a good starting point for smaller projects or projects that you don't anticipate will grow much.
-
-To use the simple version, you'll need to move the `index-simple.php` file to the `public/` directory and rename it to `index.php`. You can delete any other controllers, views, or config files (except the `config.php` file of course).
-
-With the simple setup, there is two very import security steps to be aware of. 
-- **DO NOT SAVE SENSITIVE CREDENTIALS TO THE `index.php` FILE**. 
-- **DO NOT COMMIT ANY TYPE OF SENSITIVE CREDENTIALS TO YOUR REPOSITORY**.
-
-This is what the config file is for. If you need to save sensitive credentials, save them to the config file and then reference them in the `index.php` file.
-
-## Running the Application
-
-### No Dependency Setup
-
-To run the application in development, you can run these commands 
+## 4) Lancement Du Projet (Docker)
+Commandes:
 
 ```bash
-cd cool-project-name
-composer start
+docker compose down -v
+docker compose up -d --build
 ```
 
-After that, open `http://localhost:8000` in your browser.
+Acces:
+- FrontOffice: http://localhost:8083/
+- BackOffice login: http://localhost:8083/backoffice/login.html
 
-__Note: If you run into an error similar to this `Failed to listen on localhost:8000 (reason: Address already in use)` then you'll need to change the port that the application is running on. You can do this by editing the `composer.json` file and changing the port in the `scripts.start` key.__
+Note:
+- Le script SQL d'init est [sql/script.sql](sql/script.sql)
+- Si la base existe deja, il faut `down -v` pour reinitialiser et relancer le seed.
 
-### Docker Setup
+## 5) Authentification BackOffice
+Identifiants admin par defaut (seed):
+- username: `admin`
+- password: `admin123`
 
-You can [install Docker](https://docs.docker.com/engine/install/) and use `docker-compose` to run the app with `docker`, so you can run these commands:
-```bash
-cd cool-project-name
-docker-compose up -d
-# or if a newer version of docker
-docker compose up -d
-```
-After that, open `http://localhost:8000` in your browser.
+Reference seed admin:
+- [sql/script.sql](sql/script.sql)
 
-### Vagrant Setup
-You can [install Vagrant](https://vagrantup.com/download) and a provider like [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and use simple run the following command to bring up an environment with PHP/MariaDB already setup based on [n0nag0n/firefly](https://github.com/n0nag0n/firefly)
+## 6) Modelisation Base De Donnees
+Tables:
+- `users`
+- `articles`
+- `seo_metadata`
 
-```bash
-cd cool-project-name
-vagrant up
-```
+Relations:
+- `seo_metadata.article_id` -> `articles.id` (1:1)
+- `ON DELETE CASCADE` sur la relation SEO
 
-After that, open `http://localhost:8000` in your browser.
+Schema logique (resume):
+- `users(id, username, password_hash, role, created_at)`
+- `articles(id, title, slug, content, image_url, image_alt, status, published_at, updated_at)`
+- `seo_metadata(id, article_id, meta_title, meta_description, meta_robots, canonical_url)`
 
-## Do it!
-That's it! Go build something flipping sweet!
+Reference SQL complete:
+- [sql/script.sql](sql/script.sql)
+
+## 7) Upload Image (BackOffice)
+Comportement:
+- L'image est envoyee depuis le formulaire BO (`multipart/form-data`)
+- Le fichier est stocke sur disque dans `assets/images/uploads`
+- Le chemin web est stocke dans `articles.image_url` (pas le binaire)
+
+Emplacements:
+- Machine locale: `assets/images/uploads/`
+- Conteneur web: `/var/www/html/assets/images/uploads/`
+
+References:
+- [app/views/backoffice/article_form.php](app/views/backoffice/article_form.php)
+- [app/controllers/BackOfficeController.php](app/controllers/BackOfficeController.php)
+
+## 8) Routes Principales
+FrontOffice:
+- `GET /`
+- `GET /articles/article.php`
+- `GET /articles/@legacy`
+
+BackOffice:
+- `GET|POST /admin/login`
+- `GET /admin`
+- `GET|POST /admin/articles/create`
+- `GET|POST /admin/articles/@id/edit`
+- `POST /admin/articles/@id/delete`
+- `GET|POST /backoffice/login.html`
+- `GET|POST /backoffice/articles/create.html`
+- `GET|POST /backoffice/articles/edit-@id:[0-9]+.html`
+- `POST /backoffice/articles/delete-@id:[0-9]+.html`
+
+Reference:
+- [app/config/routes.php](app/config/routes.php)
+
+## 9) Scenarios De Test (A Mettre Dans Le Document)
+### Scenario 1 - Login BO
+1. Ouvrir `/backoffice/login.html`
+2. Saisir `admin / admin123`
+3. Resultat attendu: acces dashboard admin
+
+### Scenario 2 - Creer Article Avec Upload
+1. Aller sur creation article BO
+2. Renseigner titre + contenu + status `published`
+3. Charger un fichier image
+4. Soumettre
+5. Resultat attendu: article cree, image visible, chemin en base dans `image_url`
+
+### Scenario 3 - Modifier Article Et Remplacer Image
+1. Ouvrir edition article
+2. Uploader une nouvelle image
+3. Sauvegarder
+4. Resultat attendu: article mis a jour, ancienne image locale supprimee si upload local
+
+### Scenario 4 - Supprimer Article
+1. Supprimer un article en BO
+2. Resultat attendu: ligne supprimee en base
+3. Et si image locale: fichier supprime du dossier uploads
+
+### Scenario 5 - Verification FrontOffice
+1. Ouvrir `/`
+2. Verifier affichage liste articles publies (ordre DESC)
+3. Ouvrir un article
+4. Resultat attendu: contenu + image + metadata SEO
+
+## 10) Captures Ecran A Fournir
+Checklist captures a inserer dans le document technique:
+- [ ] FO - Home (liste articles)
+- [ ] FO - Page article
+- [ ] BO - Login
+- [ ] BO - Dashboard
+- [ ] BO - Form create article avec upload
+- [ ] BO - Form edit article
+- [ ] BO - Resultat suppression article
+- [ ] BDD - table `articles` apres insertion
+- [ ] BDD - table `users` (admin)
+- [ ] BDD - table `seo_metadata`
+
+Conseil nommage images de preuve:
+- `capture_01_fo_home.png`
+- `capture_02_fo_article.png`
+- `capture_03_bo_login.png`
+- etc.
+
+## 11) Contenu Du Rendu Final (.zip)
+Le .zip de rendu doit contenir au minimum:
+- Code source complet
+- [README.md](README.md)
+- [sql/script.sql](sql/script.sql)
+- [docker-compose.yml](docker-compose.yml)
+- Dossier `assets/images/uploads/` (si vous voulez inclure les images deja uploadees)
+- Document technique (PDF ou MD)
+- Captures ecran FO/BO + modelisation BDD
+
+## 12) Limitations Connues / Notes
+- Les scripts SQL dans `/docker-entrypoint-initdb.d` ne s'executent qu'a l'initialisation d'une base vide.
+- Pour rejouer le seed: `docker compose down -v` puis `docker compose up -d --build`.
+- Les images uploadees doivent avoir des permissions ecriture sur `assets/images/uploads/`.
+
+## 13) Resume De Validation
+Etat attendu pour dire "projet OK pour rendu":
+- [ ] Docker OK
+- [ ] Login BO OK
+- [ ] CRUD article OK
+- [ ] Upload image OK
+- [ ] FrontOffice affiche les nouveaux articles OK
+- [ ] SEO de base OK
+- [ ] Captures et document technique prets
+
