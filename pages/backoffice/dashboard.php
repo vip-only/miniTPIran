@@ -1,6 +1,10 @@
 <?php
 $articles = is_array($articles ?? null) ? $articles : [];
 $gridArticles = $articles;
+$routes = is_array($routes ?? null) ? $routes : [];
+$createUrl = (string) ($routes['article_create'] ?? '/backoffice/articles/create.html');
+$editPattern = (string) ($routes['article_edit_pattern'] ?? '/backoffice/articles/edit-%d.html');
+$deletePattern = (string) ($routes['article_delete_pattern'] ?? '/backoffice/articles/delete-%d.html');
 ?>
 
 <style>
@@ -101,7 +105,7 @@ $gridArticles = $articles;
 <div class="section-header">
     <h2>Back-Office</h2>
     <a class="btn btn-sm d-inline-flex align-items-center gap-2"
-       href="/backoffice/articles/create.html"
+         href="<?= htmlspecialchars($createUrl, ENT_QUOTES, 'UTF-8'); ?>"
        title="Ajouter un article"
        aria-label="Ajouter un article"
        style="padding: .4rem .75rem; line-height: 1; background:#fff5f5; color:#c0392b; border:1px solid #c0392b;">
@@ -149,7 +153,7 @@ $gridArticles = $articles;
 
                 <div class="actions">
                     <a class="btn btn-sm d-inline-flex align-items-center justify-content-center"
-                       href="/backoffice/articles/edit-<?= (int) $article['id']; ?>.html"
+                              href="<?= htmlspecialchars(sprintf($editPattern, (int) $article['id']), ENT_QUOTES, 'UTF-8'); ?>"
                        title="Modifier"
                        aria-label="Modifier"
                        style="width: 2.15rem; height: 2.15rem; padding: 0; color: #b45309; border: 1px solid #f59e0b; background: #fffaf0;">
@@ -158,7 +162,7 @@ $gridArticles = $articles;
                         </svg>
                     </a>
 
-                    <form class="d-inline" method="post" action="/backoffice/articles/delete-<?= (int) $article['id']; ?>.html" onsubmit="return confirm('Supprimer cet article ?');">
+                    <form class="d-inline" method="post" action="<?= htmlspecialchars(sprintf($deletePattern, (int) $article['id']), ENT_QUOTES, 'UTF-8'); ?>" onsubmit="return confirm('Supprimer cet article ?');">
                         <button class="btn btn-sm d-inline-flex align-items-center justify-content-center"
                                 type="submit"
                                 title="Supprimer"

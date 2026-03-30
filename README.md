@@ -1,76 +1,83 @@
-# Flight PHP Skeleton App
+# MiniTPIran - Version PHP Sans Framework
 
-Use this skeleton application to quickly setup and start working on a new Flight PHP application. This application uses the latest version of Flight PHP v3.
+Ce projet a ete migre de Flight vers une architecture PHP simple, en conservant les fonctionnalites FrontOffice et BackOffice demandees dans [Afaire.md](Afaire.md).
 
-This skeleton application was built for Composer. You also could download a zip of this repo, downloading a zip of the [flightphp/core](https://github.com/flightphp/core) repo, and manually autoload the files by running `require('flight/autoload.php')` in your `app/config/bootstrap.php` file.
+## Architecture
+- [index.php](index.php): routeur natif (remplace routes/controllers Flight)
+- [function/common.php](function/common.php): session, PDO, rendu
+- [function/function_frontOffice.php](function/function_frontOffice.php): logique FrontOffice
+- [function/function_backoffice.php](function/function_backoffice.php): logique BackOffice
+- [pages/](pages): vues FO/BO
+- [assets/](assets): css, images, uploads
 
-## Installation
+## Fonctionnalites conservees
+- FrontOffice:
+  - Home (articles `published` tri DESC)
+  - Article legacy: `/articles/article-{id}-{page}-{rubrique}.html`
+  - Article slug: `/article/{slug}`
+  - 404 SEO
+- BackOffice:
+  - Login/logout admin
+  - Dashboard articles
+  - Create/edit/delete article
+  - Upload image local vers `assets/images/uploads/`
+  - Meta SEO (title/description/robots/canonical)
 
-Run this command from the directory in which you want to install your new Flight PHP application. (this will require PHP 7.4 or newer)
+## Routes prises en charge (sans framework)
+- `GET /`
+- `GET /article/{slug}`
+- `GET /articles/article-{id}-{page}-{rubrique}.html`
+- `GET /articles/article.php?id={id}&page={page}&rubrique={rubrique}`
+- `GET|POST /admin/login`
+- `POST /admin/logout`
+- `GET /admin`
+- `GET|POST /admin/articles/create`
+- `GET|POST /admin/articles/{id}/edit`
+- `POST /admin/articles/{id}/delete`
+- `GET|POST /backoffice/login.html`
+- `POST /backoffice/logout.html`
+- `GET /backoffice.html`
+- `GET|POST /backoffice/articles/create.html`
+- `GET|POST /backoffice/articles/edit-{id}.html`
+- `POST /backoffice/articles/delete-{id}.html`
 
+## Base de donnees
+Script SQL principal:
+- [sql/script.sql](sql/script.sql)
+
+Identifiants admin seed:
+- username: `admin`
+- password: `admin123`
+
+## Upload images
+- Stockage physique: `assets/images/uploads/`
+- Valeur stockee en base (`articles.image_url`): `/assets/images/uploads/<fichier>`
+- Types acceptes: jpg, png, webp, gif
+- Taille max: 5 Mo
+
+## .htaccess
+Le fichier [\.htaccess](.htaccess) est configure en front controller:
+- les fichiers/dossiers existants sont servis directement
+- toutes les autres URLs passent par [index.php](index.php)
+
+## Lancement Docker
 ```bash
-composer create-project flightphp/skeleton cool-project-name
+docker compose down -v
+docker compose up -d --build
 ```
 
-Replace `cool-project-name` with the desired directory name for your new application.
+URLs:
+- FrontOffice: http://localhost:8083/
+- BackOffice login: http://localhost:8083/backoffice/login.html
 
-After you create the project, make sure you go to the `app/config/config.php` and `app/config/services.php` and uncomment the lines related to the database you want to use before you get started.
+## Verification rapide (scenarios)
+1. Login BO: `admin / admin123`
+2. Create article + upload image
+3. Edit article + remplacement image
+4. Delete article
+5. Verification FO home + article
 
-**Note:** If you are installing with PHP 8.0 or above and want to use `tracy-extensions` be sure to run `composer require --dev flightphp/tracy-extensions "^0.2"` after the project is created.
-
-### Robust Setup of the Application
-
-This skeleton will come with 2 versions of a starter application. The robust version is a fully structured application meant for projects that you anticipate will be a bigger size. This is setup with object oriented programming in mind so that it is easier to unit test and scale your project with multiple developers (or make it easier on yourself).
-
-The robust version adds an `app/` directory where everything has a basic structure. This is how this skeleton is configured by default.
-
-### Simple Setup of the Application
-
-This is basically a single file application. The only exception to this is the config file which is still in the `app/config/` directory. This is a good starting point for smaller projects or projects that you don't anticipate will grow much.
-
-To use the simple version, you'll need to move the `index-simple.php` file to the `public/` directory and rename it to `index.php`. You can delete any other controllers, views, or config files (except the `config.php` file of course).
-
-With the simple setup, there is two very import security steps to be aware of. 
-- **DO NOT SAVE SENSITIVE CREDENTIALS TO THE `index.php` FILE**. 
-- **DO NOT COMMIT ANY TYPE OF SENSITIVE CREDENTIALS TO YOUR REPOSITORY**.
-
-This is what the config file is for. If you need to save sensitive credentials, save them to the config file and then reference them in the `index.php` file.
-
-## Running the Application
-
-### No Dependency Setup
-
-To run the application in development, you can run these commands 
-
-```bash
-cd cool-project-name
-composer start
-```
-
-After that, open `http://localhost:8000` in your browser.
-
-__Note: If you run into an error similar to this `Failed to listen on localhost:8000 (reason: Address already in use)` then you'll need to change the port that the application is running on. You can do this by editing the `composer.json` file and changing the port in the `scripts.start` key.__
-
-### Docker Setup
-
-You can [install Docker](https://docs.docker.com/engine/install/) and use `docker-compose` to run the app with `docker`, so you can run these commands:
-```bash
-cd cool-project-name
-docker-compose up -d
-# or if a newer version of docker
-docker compose up -d
-```
-After that, open `http://localhost:8000` in your browser.
-
-### Vagrant Setup
-You can [install Vagrant](https://vagrantup.com/download) and a provider like [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and use simple run the following command to bring up an environment with PHP/MariaDB already setup based on [n0nag0n/firefly](https://github.com/n0nag0n/firefly)
-
-```bash
-cd cool-project-name
-vagrant up
-```
-
-After that, open `http://localhost:8000` in your browser.
-
-## Do it!
-That's it! Go build something flipping sweet!
+## Notes migration
+- Controllers Flight supprimes
+- Fichier `app/config/routes.php` supprime
+- Routage et logique de controle deplacees dans `function/` + `index.php`

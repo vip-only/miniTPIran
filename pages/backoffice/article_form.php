@@ -15,6 +15,8 @@ $publishedAtValue = $publishedAtRaw !== ''
     ? date('Y-m-d\TH:i', strtotime($publishedAtRaw))
     : '';
 $formAction = (string) ($formAction ?? '/backoffice/articles/create.html');
+$routes = is_array($routes ?? null) ? $routes : [];
+$dashboardUrl = (string) ($routes['dashboard'] ?? '/backoffice.html');
 $pageTitle = $mode === 'edit' ? 'Modifier un article' : 'Créer un article';
 $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
 ?>
@@ -77,7 +79,7 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
             <div class="info"><?= htmlspecialchars((string) $info, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
 
-        <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" enctype="multipart/form-data">
+        <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" enctype="multipart/form-data" data-tinymce-form="1">
             <div class="grid">
                 <div>
                     <label for="title">Titre</label>
@@ -151,7 +153,7 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
 
             <div class="actions">
                 <button type="submit"><?= htmlspecialchars($buttonLabel, ENT_QUOTES, 'UTF-8'); ?></button>
-                <a class="btn" href="/backoffice.html">Retour</a>
+                <a class="btn" href="<?= htmlspecialchars($dashboardUrl, ENT_QUOTES, 'UTF-8'); ?>">Retour</a>
             </div>
         </form>
     </main>

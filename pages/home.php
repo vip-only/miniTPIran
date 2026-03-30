@@ -1,5 +1,5 @@
 <?php
-$baseUrl = Flight::get('flight.base_url');
+$baseUrl = $baseUrl ?? app_base_url();
 $articles = is_array($articles ?? null) ? array_values($articles) : [];
 $mainArticle = $articles[0] ?? null;
 $sidebarArticles = array_slice($articles, 1, 3);

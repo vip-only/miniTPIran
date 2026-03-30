@@ -1,6 +1,9 @@
 <?php
-$baseUrl = Flight::get('flight.base_url');
+$baseUrl = $baseUrl ?? app_base_url();
 $pageName = $page ?? '404';
+$routes = is_array($routes ?? null) ? $routes : [];
+$loginUrl = (string) ($routes['login'] ?? '/backoffice/login.html');
+$logoutUrl = (string) ($routes['logout'] ?? '/backoffice/logout.html');
 $allowedPages = ['home', 'article', '404', 'backoffice/dashboard'];
 if (!in_array($pageName, $allowedPages, true)) {
     $pageName = '404';
@@ -31,12 +34,12 @@ if (!file_exists($viewFile)) {
         </div>
         <?php if (!empty($_SESSION['is_admin'])): ?>
             <div class="d-flex gap-2 align-items-center">
-                <form method="post" action="/backoffice/logout.html" class="m-0 p-0 d-inline">
+                <form method="post" action="<?= htmlspecialchars($logoutUrl, ENT_QUOTES, 'UTF-8'); ?>" class="m-0 p-0 d-inline">
                     <button type="submit" class="subscribe-btn" style="border:0; cursor:pointer;">Sign out</button>
                 </form>
             </div>
         <?php else: ?>
-            <a href="/backoffice/login.html" class="subscribe-btn">Back-Office</a>
+            <a href="<?= htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8'); ?>" class="subscribe-btn">Back-Office</a>
         <?php endif; ?>
     </div>
 

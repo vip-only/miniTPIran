@@ -1,28 +1,24 @@
 <?php
 
-/*
- * FlightPHP Framework
- * @copyright   Copyright (c) 2024, Mike Cao <mike@mikecao.com>, n0nag0n <n0nag0n@sky-9.com>
- * @license     MIT, http://flightphp.com/license
-                                                                  .____   __ _
-     __o__   _______ _ _  _                                     /     /
-     \    ~\                                                  /      /
-       \     '\                                         ..../      .'
-        . ' ' . ~\                                      ' /       /
-       .  _    .  ~ \  .+~\~ ~ ' ' " " ' ' ~ - - - - - -''_      /
-      .  <#  .  - - -/' . ' \  __                          '~ - \
-       .. -           ~-.._ / |__|  ( )  ( )  ( )  0  o    _ _    ~ .
-     .-'                                               .- ~    '-.    -.
-    <                      . ~ ' ' .             . - ~             ~ -.__~_. _ _
-      ~- .       N121PP  .          . . . . ,- ~
-            ' ~ - - - - =.   <#>    .         \.._
-                        .     ~      ____ _ .. ..  .- .
-                         .         '        ~ -.        ~ -.
-                           ' . . '               ~ - .       ~-.
-                                                       ~ - .      ~ .
-                                                              ~ -...0..~. ____
-   Cessna 402  (Wings)
-   by Dick Williams, rjw1@tyrell.net
-*/
-$ds = DIRECTORY_SEPARATOR;
-require(__DIR__. $ds . 'app' . $ds . 'config' . $ds . 'bootstrap.php');
+declare(strict_types=1);
+
+require_once __DIR__ . '/function/common.php';
+require_once __DIR__ . '/function/function_frontOffice.php';
+require_once __DIR__ . '/function/function_backoffice.php';
+require_once __DIR__ . '/pages/traitement_frontOffice.php';
+require_once __DIR__ . '/pages/traitement_backoffice.php';
+
+app_start_session();
+
+$method = app_request_method();
+$path = app_request_path();
+
+if (handle_frontoffice_request($method, $path)) {
+  exit;
+}
+
+if (handle_backoffice_request($method, $path)) {
+  exit;
+}
+
+fo_render_not_found($path);

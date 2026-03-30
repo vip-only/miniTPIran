@@ -1,5 +1,5 @@
 <?php
-$baseUrl = Flight::get('flight.base_url');
+$baseUrl = $baseUrl ?? app_base_url();
 $pageTitle = $title ?? 'Mini Projet Web';
 $pageDescription = $metaDescription ?? 'Site d information sur la guerre en Iran.';
 $canonical = $canonicalUrl ?? $baseUrl;
