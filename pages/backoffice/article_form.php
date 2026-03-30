@@ -4,12 +4,7 @@ $article = is_array($article ?? null) ? $article : [];
 $titleValue = (string) ($article['title'] ?? '');
 $contentValue = (string) ($article['content'] ?? '');
 $imageUrlValue = (string) ($article['image_url'] ?? '');
-$imageAltValue = (string) ($article['image_alt'] ?? '');
 $statusValue = (string) ($article['status'] ?? 'draft');
-$metaTitleValue = (string) ($article['meta_title'] ?? '');
-$metaDescriptionValue = (string) ($article['meta_description'] ?? '');
-$metaRobotsValue = (string) ($article['meta_robots'] ?? 'index, follow');
-$canonicalUrlValue = (string) ($article['canonical_url'] ?? '');
 $publishedAtRaw = (string) ($article['published_at'] ?? '');
 $publishedAtValue = $publishedAtRaw !== ''
     ? date('Y-m-d\TH:i', strtotime($publishedAtRaw))
@@ -107,15 +102,17 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
                 </div>
 
                 <div>
-                    <label for="image_alt">Image alt</label>
-                    <input type="text" id="image_alt" name="image_alt" value="<?= htmlspecialchars($imageAltValue, ENT_QUOTES, 'UTF-8'); ?>">
+                    <label>SEO auto</label>
+                    <div class="hint" style="border:1px solid #d0d7de; border-radius:8px; padding:.65rem .75rem; background:#f9fbff;">
+                        Slug, URL canonique, meta title/description, meta robots, texte alt image et normalisation des titres H1..H6 sont generes automatiquement a partir du titre et du contenu.
+                    </div>
                 </div>
             </div>
 
             <?php if ($imageUrlValue !== ''): ?>
                 <div style="margin-top: .8rem;">
                     <div class="hint" style="margin-bottom: .45rem;">Image actuelle:</div>
-                    <img src="<?= htmlspecialchars($imageUrlValue, ENT_QUOTES, 'UTF-8'); ?>" alt="<?= htmlspecialchars($imageAltValue !== '' ? $imageAltValue : 'Image actuelle', ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 280px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                    <img src="<?= htmlspecialchars($imageUrlValue, ENT_QUOTES, 'UTF-8'); ?>" alt="Image actuelle" style="max-width: 280px; border-radius: 8px; border: 1px solid #e5e7eb;">
                 </div>
             <?php endif; ?>
 
@@ -129,27 +126,7 @@ $buttonLabel = $mode === 'edit' ? 'Mettre à jour' : 'Créer';
                         value="<?= htmlspecialchars($publishedAtValue, ENT_QUOTES, 'UTF-8'); ?>"
                     >
                 </div>
-
-                <div>
-                    <label for="canonical_url">Canonical URL</label>
-                    <input type="text" id="canonical_url" name="canonical_url" value="<?= htmlspecialchars($canonicalUrlValue, ENT_QUOTES, 'UTF-8'); ?>" placeholder="/article/slug">
-                </div>
             </div>
-
-            <div class="grid">
-                <div>
-                    <label for="meta_title">Meta title</label>
-                    <input type="text" id="meta_title" name="meta_title" value="<?= htmlspecialchars($metaTitleValue, ENT_QUOTES, 'UTF-8'); ?>">
-                </div>
-
-                <div>
-                    <label for="meta_robots">Meta robots</label>
-                    <input type="text" id="meta_robots" name="meta_robots" value="<?= htmlspecialchars($metaRobotsValue, ENT_QUOTES, 'UTF-8'); ?>">
-                </div>
-            </div>
-
-            <label for="meta_description">Meta description</label>
-            <textarea id="meta_description" name="meta_description"><?= htmlspecialchars($metaDescriptionValue, ENT_QUOTES, 'UTF-8'); ?></textarea>
 
             <div class="actions">
                 <button type="submit"><?= htmlspecialchars($buttonLabel, ENT_QUOTES, 'UTF-8'); ?></button>

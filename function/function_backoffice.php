@@ -15,6 +15,31 @@ function bo_slugify(string $value): string
     return $value !== '' ? $value : 'article';
 }
 
+function bo_generate_unique_slug(string $title, ?int $excludeId = null): string
+{
+    $base = bo_slugify($title);
+    $slug = $base;
+    $suffix = 2;
+
+    while (true) {
+        if ($excludeId !== null) {
+            $stmt = app_db()->prepare('SELECT COUNT(*) FROM articles WHERE slug = :slug AND id <> :exclude_id');
+            $stmt->execute(['slug' => $slug, 'exclude_id' => $excludeId]);
+        } else {
+            $stmt = app_db()->prepare('SELECT COUNT(*) FROM articles WHERE slug = :slug');
+            $stmt->execute(['slug' => $slug]);
+        }
+
+        $count = (int) $stmt->fetchColumn();
+        if ($count === 0) {
+            return $slug;
+        }
+
+        $slug = $base . '-' . $suffix;
+        $suffix++;
+    }
+}
+
 function bo_set_route_context(string $context): void
 {
     $normalized = $context === 'admin' ? 'admin' : 'legacy';
@@ -305,12 +330,7 @@ function bo_article_create_post(): void
     $data = is_array($_POST) ? $_POST : [];
     $title = trim((string) ($data['title'] ?? ''));
     $content = trim((string) ($data['content'] ?? ''));
-    $imageAlt = trim((string) ($data['image_alt'] ?? ''));
     $status = in_array((string) ($data['status'] ?? 'draft'), ['draft', 'published'], true) ? (string) $data['status'] : 'draft';
-    $metaTitle = trim((string) ($data['meta_title'] ?? ''));
-    $metaDescription = trim((string) ($data['meta_description'] ?? ''));
-    $metaRobots = trim((string) ($data['meta_robots'] ?? 'index, follow'));
-    $canonicalUrl = trim((string) ($data['canonical_url'] ?? ''));
 
     $uploadError = '';
     $uploadedImagePath = bo_process_uploaded_image($_FILES['image_file'] ?? null, $uploadError);
@@ -326,8 +346,10 @@ function bo_article_create_post(): void
         return;
     }
 
-    $slug = bo_slugify($title);
-    $publishedAt = app_parse_datetime($data['published_at'] ?? null);
+    $slug = bo_generate_unique_slug($title);
+    $publishedAt = app_parse_datetime($data['published_at'] ?? null) ?? date('Y-m-d H:i:s');
+    $imageAlt = 'Illustration: ' . $title;
+    $normalizedContent = fo_normalize_article_html($content, $imageAlt);
 
     $db = app_db();
     $db->beginTransaction();
@@ -337,7 +359,7 @@ function bo_article_create_post(): void
         $stmt->execute([
             'title' => $title,
             'slug' => $slug,
-            'content' => $content,
+            'content' => $normalizedContent,
             'image_url' => $uploadedImagePath,
             'image_alt' => $imageAlt,
             'status' => $status,
@@ -345,16 +367,22 @@ function bo_article_create_post(): void
         ]);
 
         $articleId = (int) $db->lastInsertId();
-        if ($canonicalUrl === '') {
-            $canonicalUrl = '/article/' . $slug;
-        }
+        $canonicalUrl = fo_article_pretty_url([
+            'id' => $articleId,
+            'slug' => $slug,
+            'title' => $title,
+            'published_at' => $publishedAt,
+        ]);
+        $metaTitle = $title;
+        $metaDescription = fo_fallback_description($title, $normalizedContent);
+        $metaRobots = $status === 'published' ? 'index, follow' : 'noindex, nofollow';
 
         $stmtSeo = $db->prepare('INSERT INTO seo_metadata (article_id, meta_title, meta_description, meta_robots, canonical_url) VALUES (:article_id, :meta_title, :meta_description, :meta_robots, :canonical_url)');
         $stmtSeo->execute([
             'article_id' => $articleId,
-            'meta_title' => $metaTitle !== '' ? $metaTitle : $title,
+            'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
-            'meta_robots' => $metaRobots !== '' ? $metaRobots : 'index, follow',
+            'meta_robots' => $metaRobots,
             'canonical_url' => $canonicalUrl,
         ]);
 
@@ -410,12 +438,7 @@ function bo_article_edit_post(int $id): void
     $data = is_array($_POST) ? $_POST : [];
     $title = trim((string) ($data['title'] ?? ''));
     $content = trim((string) ($data['content'] ?? ''));
-    $imageAlt = trim((string) ($data['image_alt'] ?? ''));
     $status = in_array((string) ($data['status'] ?? 'draft'), ['draft', 'published'], true) ? (string) $data['status'] : 'draft';
-    $metaTitle = trim((string) ($data['meta_title'] ?? ''));
-    $metaDescription = trim((string) ($data['meta_description'] ?? ''));
-    $metaRobots = trim((string) ($data['meta_robots'] ?? 'index, follow'));
-    $canonicalUrl = trim((string) ($data['canonical_url'] ?? ''));
 
     $uploadError = '';
     $uploadedImagePath = bo_process_uploaded_image($_FILES['image_file'] ?? null, $uploadError);
@@ -435,8 +458,13 @@ function bo_article_edit_post(int $id): void
     }
 
     $finalImage = $uploadedImagePath !== null ? $uploadedImagePath : (($existing['image_url'] ?? '') !== '' ? (string) $existing['image_url'] : null);
-    $slug = bo_slugify($title);
+    $slug = bo_generate_unique_slug($title, $id);
     $publishedAt = app_parse_datetime($data['published_at'] ?? null);
+    if ($publishedAt === null) {
+        $publishedAt = (string) ($existing['published_at'] ?? date('Y-m-d H:i:s'));
+    }
+    $imageAlt = 'Illustration: ' . $title;
+    $normalizedContent = fo_normalize_article_html($content, $imageAlt);
 
     $db = app_db();
     $db->beginTransaction();
@@ -447,7 +475,7 @@ function bo_article_edit_post(int $id): void
             'id' => $id,
             'title' => $title,
             'slug' => $slug,
-            'content' => $content,
+            'content' => $normalizedContent,
             'image_url' => $finalImage,
             'image_alt' => $imageAlt,
             'status' => $status,
@@ -458,16 +486,22 @@ function bo_article_edit_post(int $id): void
             bo_delete_uploaded_image_if_local((string) $existing['image_url']);
         }
 
-        if ($canonicalUrl === '') {
-            $canonicalUrl = '/article/' . $slug;
-        }
+        $canonicalUrl = fo_article_pretty_url([
+            'id' => $id,
+            'slug' => $slug,
+            'title' => $title,
+            'published_at' => $publishedAt,
+        ]);
+        $metaTitle = $title;
+        $metaDescription = fo_fallback_description($title, $normalizedContent);
+        $metaRobots = $status === 'published' ? 'index, follow' : 'noindex, nofollow';
 
         $stmtSeo = $db->prepare('INSERT INTO seo_metadata (article_id, meta_title, meta_description, meta_robots, canonical_url) VALUES (:article_id, :meta_title, :meta_description, :meta_robots, :canonical_url) ON DUPLICATE KEY UPDATE meta_title = VALUES(meta_title), meta_description = VALUES(meta_description), meta_robots = VALUES(meta_robots), canonical_url = VALUES(canonical_url)');
         $stmtSeo->execute([
             'article_id' => $id,
-            'meta_title' => $metaTitle !== '' ? $metaTitle : $title,
+            'meta_title' => $metaTitle,
             'meta_description' => $metaDescription,
-            'meta_robots' => $metaRobots !== '' ? $metaRobots : 'index, follow',
+            'meta_robots' => $metaRobots,
             'canonical_url' => $canonicalUrl,
         ]);
 
