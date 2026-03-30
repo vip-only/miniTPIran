@@ -42,6 +42,9 @@ $openGraphType = $ogType ?? 'website';
         background: var(--bg);
         color: var(--ink);
         line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
     }
 
     a { text-decoration: none; color: inherit; }
@@ -153,6 +156,7 @@ $openGraphType = $ogType ?? 'website';
         max-width: 1280px;
         margin: 0 auto;
         padding: 0 1.5rem;
+        width: 100%;
     }
 
     .hero {
@@ -292,7 +296,7 @@ $openGraphType = $ogType ?? 'website';
     }
 
     .site-footer {
-        margin-top: 2rem;
+        margin-top: auto;
         background: var(--black);
         color: #aaa;
         padding: 1.2rem 0;

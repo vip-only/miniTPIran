@@ -130,6 +130,21 @@ class BackOfficeController
         return $article === false ? null : $article;
     }
 
+    private function fetchArticles(): array
+    {
+        $stmt = Flight::db()->prepare(
+            'SELECT a.id, a.title, a.slug, a.content, a.image_url, a.image_alt, a.status, a.published_at,
+                    s.meta_title, s.meta_description, s.meta_robots, s.canonical_url
+             FROM articles a
+             LEFT JOIN seo_metadata s ON s.article_id = a.id
+             ORDER BY a.published_at DESC, a.id DESC'
+        );
+        $stmt->execute();
+
+        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return is_array($articles) ? $articles : [];
+    }
+
     private function renderArticleForm(array $article = [], string $mode = 'create', string $error = '', string $info = ''): void
     {
         $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
@@ -159,9 +174,16 @@ class BackOfficeController
 
     private function renderDashboard(string $info = ''): void
     {
-        Flight::render('backoffice/dashboard', [
+        Flight::render('template', [
+            'page' => 'backoffice/dashboard',
+            'title' => 'Dashboard Back-Office | Mini Projet Web',
+            'metaDescription' => 'Tableau de bord de gestion des articles.',
+            'canonicalUrl' => '/backoffice.html',
+            'ogType' => 'website',
             'username' => (string) ($_SESSION['admin_username'] ?? 'admin'),
             'logoutAction' => '/backoffice/logout.html',
+            'createAction' => '/backoffice/articles/create.html',
+            'articles' => $this->fetchArticles(),
             'info' => $info,
         ]);
     }
@@ -340,13 +362,14 @@ class BackOfficeController
         }
     }
 
-    public function adminArticleEditGet(int $id): void
+    public function adminArticleEditGet(string|int $id): void
     {
         if (!$this->requireAdmin()) {
             return;
         }
 
-        $article = $this->fetchArticleById($id);
+        $articleId = (int) $id;
+        $article = $this->fetchArticleById($articleId);
         if ($article === null) {
             http_response_code(404);
             $this->renderDashboard('Article introuvable.');
@@ -356,13 +379,14 @@ class BackOfficeController
         $this->renderArticleForm($article, 'edit');
     }
 
-    public function adminArticleEditPost(int $id): void
+    public function adminArticleEditPost(string|int $id): void
     {
         if (!$this->requireAdmin()) {
             return;
         }
 
-        $existing = $this->fetchArticleById($id);
+        $articleId = (int) $id;
+        $existing = $this->fetchArticleById($articleId);
         if ($existing === null) {
             http_response_code(404);
             $this->renderDashboard('Article introuvable.');
@@ -417,7 +441,7 @@ class BackOfficeController
                  WHERE id = :id'
             );
             $stmt->execute([
-                'id' => $id,
+                'id' => $articleId,
                 'title' => $title,
                 'slug' => $slug,
                 'content' => $content,
@@ -445,7 +469,7 @@ class BackOfficeController
                      canonical_url = VALUES(canonical_url)'
             );
             $stmtSeo->execute([
-                'article_id' => $id,
+                'article_id' => $articleId,
                 'meta_title' => $metaTitle !== '' ? $metaTitle : $title,
                 'meta_description' => $metaDescription,
                 'meta_robots' => $metaRobots !== '' ? $metaRobots : 'index, follow',
@@ -453,19 +477,19 @@ class BackOfficeController
             ]);
 
             $db->commit();
-            $this->renderArticleForm($this->fetchArticleById($id) ?? [], 'edit', '', 'Article mis à jour avec succès.');
+            $this->renderArticleForm($this->fetchArticleById($articleId) ?? [], 'edit', '', 'Article mis à jour avec succès.');
         } catch (\Throwable $e) {
             if ($db->inTransaction()) {
                 $db->rollBack();
             }
 
             http_response_code(500);
-            $data['id'] = $id;
+            $data['id'] = $articleId;
             $this->renderArticleForm($data, 'edit', 'Erreur lors de la mise à jour de l’article.');
         }
     }
 
-    public function adminArticleDeletePost(int $id): void
+    public function adminArticleDeletePost(string|int $id): void
     {
         if (!$this->requireAdmin()) {
             return;
@@ -474,7 +498,7 @@ class BackOfficeController
         $existing = $this->fetchArticleById($id);
 
         $stmt = Flight::db()->prepare('DELETE FROM articles WHERE id = :id');
-        $stmt->execute(['id' => $id]);
+        $stmt->execute(['id' => (int) $id]);
 
         if ($existing !== null) {
             $this->deleteUploadedImageIfLocal((string) ($existing['image_url'] ?? ''));
