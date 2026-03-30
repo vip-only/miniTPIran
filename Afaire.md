@@ -215,3 +215,4 @@ Puis redémarre/rebuild :
 docker compose up --build -d
 ```
 
+docker compose exec mysql mysql -uapp -papp mini_tp_iran

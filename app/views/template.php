@@ -29,7 +29,15 @@ if (!file_exists($viewFile)) {
             <a href="#">Podcasts</a>
             <a href="#">Videos</a>
         </div>
-        <a href="/backoffice/login.html" class="subscribe-btn">Back-Office</a>
+        <?php if (!empty($_SESSION['is_admin'])): ?>
+            <div class="d-flex gap-2 align-items-center">
+                <form method="post" action="/backoffice/logout.html" class="m-0 p-0 d-inline">
+                    <button type="submit" class="subscribe-btn" style="border:0; cursor:pointer;">Sign out</button>
+                </form>
+            </div>
+        <?php else: ?>
+            <a href="/backoffice/login.html" class="subscribe-btn">Back-Office</a>
+        <?php endif; ?>
     </div>
 
     <header class="site-header">

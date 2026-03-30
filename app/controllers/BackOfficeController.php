@@ -145,6 +145,20 @@ class BackOfficeController
         return is_array($articles) ? $articles : [];
     }
 
+    private function fetchPublishedArticles(): array
+    {
+        $stmt = Flight::db()->prepare(
+            "SELECT id, title, content, image_url, image_alt, published_at
+             FROM articles
+             WHERE status = 'published'
+             ORDER BY published_at DESC, id DESC"
+        );
+        $stmt->execute();
+
+        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return is_array($articles) ? $articles : [];
+    }
+
     private function renderArticleForm(array $article = [], string $mode = 'create', string $error = '', string $info = ''): void
     {
         $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
@@ -261,7 +275,16 @@ class BackOfficeController
         }
 
         session_destroy();
-        $this->renderLogin('', 'Déconnexion réussie.');
+        Flight::render('template', [
+            'page' => 'home',
+            'articles' => $this->fetchPublishedArticles(),
+            'title' => 'Accueil | Mini Projet Web',
+            'metaDescription' => 'Actualites et analyses sur la guerre en Iran.',
+            'canonicalUrl' => '/',
+            'ogType' => 'website',
+            'currentPath' => '/',
+            'info' => 'Déconnexion réussie.',
+        ]);
     }
 
     public function adminDashboard(): void
@@ -495,14 +518,11 @@ class BackOfficeController
             return;
         }
 
-        $existing = $this->fetchArticleById($id);
+        $id = (int) $id;
 
-        $stmt = Flight::db()->prepare('DELETE FROM articles WHERE id = :id');
-        $stmt->execute(['id' => (int) $id]);
-
-        if ($existing !== null) {
-            $this->deleteUploadedImageIfLocal((string) ($existing['image_url'] ?? ''));
-        }
+        $db = Flight::db();
+        $stmt = $db->prepare('DELETE FROM articles WHERE id = :id');
+        $stmt->execute(['id' => $id]);
 
         $this->renderDashboard('Article supprimé.');
     }
