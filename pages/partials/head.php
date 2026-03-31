@@ -17,7 +17,7 @@ $openGraphType = $ogType ?? 'website';
 <link rel="stylesheet" href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8'); ?>assets/css/bootstrap.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&family=Noto+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Noto+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
     *, *::before, *::after { box-sizing: border-box; }
     :root {
@@ -32,7 +32,7 @@ $openGraphType = $ogType ?? 'website';
         --blue: #0a3d6b;
         --gold: #b8860b;
         --serif: 'Playfair Display', Georgia, serif;
-        --body-serif: 'Source Serif 4', Georgia, serif;
+        --body-serif: Georgia, 'Times New Roman', serif;
         --sans: 'Noto Sans', Helvetica, sans-serif;
     }
 
@@ -253,9 +253,18 @@ $openGraphType = $ogType ?? 'website';
     }
 
     .meta {
-        color: var(--light);
-        font-size: 0.7rem;
+        color: #4a433b;
+        font-size: 0.76rem;
         font-family: var(--sans);
+        font-weight: 600;
+        letter-spacing: 0.01em;
+    }
+
+    .hero-meta,
+    .article-page .meta {
+        color: #3f3831;
+        font-size: 0.78rem;
+        font-weight: 700;
     }
 
     .article-page {
